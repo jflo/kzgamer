@@ -70,11 +70,16 @@ def overlay_info(frame, dice, blobs):
 params = cv2.SimpleBlobDetector_Params()
 params.filterByInertia
 params.minInertiaRatio = 0.6
-
+desktop = True
 detector = cv2.SimpleBlobDetector_create(params)
 
 while(True):
-	ret, frame = picam2.capture_array()
+    if desktop:
+        cap = cv2.VideoCapture(0)
+        ret, frame = cap.read()
+    else:
+        ret, frame = picam2.capture_array()
+
     blobs = get_blobs(frame)
     dice = get_dice_from_blobs(blobs)
     out_frame = overlay_info(frame, dice, blobs)
