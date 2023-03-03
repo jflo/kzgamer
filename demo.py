@@ -67,6 +67,8 @@ def overlay_info(frame, dice, blobs):
                     (int(d[1] - textsize[0] / 2),
                      int(d[2] + textsize[1] / 2)),
                     cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 2)
+        
+        
 params = cv2.SimpleBlobDetector_Params()
 params.filterByInertia
 params.minInertiaRatio = 0.6
@@ -74,7 +76,7 @@ params.minInertiaRatio = 0.6
 detector = cv2.SimpleBlobDetector_create(params)
 
 while(True):
-	ret, frame = picam2.capture_array()
+    frame = picam2.capture_array()
     blobs = get_blobs(frame)
     dice = get_dice_from_blobs(blobs)
     out_frame = overlay_info(frame, dice, blobs)
