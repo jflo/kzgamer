@@ -3,6 +3,7 @@ import cv2
 from dice import get_blobs, get_dice_from_blobs
 from vid_markup import overlay_info
 from entropy import Entropy
+from trapdoor import TrapDoor
 
 desktop = True
 
@@ -18,6 +19,8 @@ else:
     picam2.start()
 
 entropy = Entropy()
+trapDoor = TrapDoor()
+
 loopState = "waiting"
 seenSince = 0
 currentDice = 0
