@@ -1,18 +1,18 @@
 import cv2
-# from picamera2 import Picamera2, Preview
+from picamera2 import Picamera2, Preview
 from dice import get_blobs, get_dice_from_blobs
 from vid_markup import overlay_info
 from entropy import Entropy
 from trapdoor import TrapDoor
 
-desktop = True
+desktop = False
 
 if desktop:
     cap = cv2.VideoCapture(0)
 else:
-    # picam2 = Picamera2()
-    picam2 = {};
-    picam2.preview_configuration.main.size = (1280, 720)
+    picam2 = Picamera2()
+    # picam2 = {};
+    picam2.preview_configuration.main.size = (800, 480)
     picam2.preview_configuration.main.format = "RGB888"
     picam2.preview_configuration.align()
     picam2.configure("preview")
@@ -29,7 +29,7 @@ while not entropy.entropy_full():
         ret, frame = cap.read()
         cv2.imshow('frame', frame)
     else:
-        ret, frame = picam2.capture_array()
+        frame = picam2.capture_array()
 
     # check for dice
     blobs = get_blobs(frame)

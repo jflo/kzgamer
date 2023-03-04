@@ -72,7 +72,7 @@ def overlay_info(frame, dice, blobs):
 params = cv2.SimpleBlobDetector_Params()
 params.filterByInertia
 params.minInertiaRatio = 0.6
-desktop = True
+desktop = False
 detector = cv2.SimpleBlobDetector_create(params)
 
 while(True):
