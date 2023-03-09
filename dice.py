@@ -9,10 +9,14 @@ params.minInertiaRatio = 0.6
 detector = cv2.SimpleBlobDetector_create(params)
 
 def get_blobs(frame):
-    frame_blurred = cv2.medianBlur(frame, 7)
-    frame_gray = cv2.cvtColor(frame_blurred, cv2.COLOR_BGR2GRAY)
-    blobs = detector.detect(frame_gray)
+    blobs = detector.detect(frame)
     return blobs
+
+def simplify_dice(complex_dice) :
+    simple_dice = [sub_array[0] for sub_array in  complex_dice]
+    simple_dice.sort()
+    return simple_dice
+
 def get_dice_from_blobs(blobs):
     # Get centroids of all blobs
     X = []

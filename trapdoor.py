@@ -1,14 +1,15 @@
+from gpiozero import Servo
+import time
+
 
 class TrapDoor:
 
     def __init__(self):
-        self.open = False #should read from servos.
+        self.servo = Servo(18)
+        self.servo.max()
 
-    def is_open(self):
-        return open;
+    def springAndReset(self):
+        self.servo.min()
+        time.sleep(.5)
+        self.servo.max()
 
-    def open(self):
-        self.open = True
-
-    def close(self):
-        self.open = False
