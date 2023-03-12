@@ -13,6 +13,7 @@ class TrapDoor:
 
     def __init__(self):
         self.kit = MotorKit()
+        i2c = busio.I2C(SCL, SDA)
         self.pca = PCA9685(i2c, address=96)
         self.pca.frequency = 50 #most servos default to 50hz pulse width
         self.door = servo.Servo(pca.channels[7])
