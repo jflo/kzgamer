@@ -21,14 +21,12 @@ picam2.start()
 
 entropy = Entropy()
 trapDoor = TrapDoor()
-lights = LED(17)
-trapDoor.springAndReset()
+trapDoor.home()
 
 loopState = "waiting"
 settleFrames = 10
 seenSince = 0
 currentDice = 0
-lights.on()
 
 while not entropy.entropy_full():
     frame = picam2.capture_array()
@@ -47,7 +45,6 @@ while not entropy.entropy_full():
       loopState = "dice stable"
       entropy.entropy_add(simple_dice)
       # open trapDoor for 2 sec, close it back up
-      print("dumping")
       trapDoor.springAndReset()
       seenSince = 0
     else:
@@ -57,8 +54,9 @@ while not entropy.entropy_full():
     cv2.imshow('frame', processed)
     currentDice = simple_dice
     if entropy.entropy_full():
-        entropy.runningEntropy.
-        subprocess.run("kzgcli offline contribute ceremony-state.json --entropy-hex {entropy}")
+        hex = entropy.runningEntropy.toHexString()
+        subprocess.run(["ls -l"], capture_output=True)
+        subprocess.run(["kzgcli offline contribute ceremony-state.json kzgamer-contribution.json --entropy-hex {hex}"],capture_output=True)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        lights.off()
         break
