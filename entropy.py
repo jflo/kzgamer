@@ -1,9 +1,10 @@
 from bitarray import bitarray
+from bitarray import bitarray.util
 
 class Entropy:
 
     def __init__(self):
-        self.runningEntropy = bitarray() # will later be divided into 4
+        self.runningEntropy = bitarray()
 
     def entropy_add(self, dice) :
         for d in dice:
@@ -19,3 +20,7 @@ class Entropy:
 
     def entropy_full(self):
         return len(self.runningEntropy) >= 1024
+
+    def toHexString(self):
+        if self.runningEntropy % 4 == 0:
+            return bitarray.util.ba2hex(self.runningEntropy)
