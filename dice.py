@@ -5,7 +5,16 @@ from sklearn import cluster
 
 params = cv2.SimpleBlobDetector_Params()
 params.filterByInertia
-params.minInertiaRatio = 0.6
+#filter out things too elongated, likely not on top face
+params.minInertiaRatio = 0.75
+params.maxInertiaRatio = 1
+params.minCircularity = 0.95
+params.maxCircularity = 1
+params.blobColor = 0
+params.minThreshold = 50
+params.maxThreshold = 150
+
+
 detector = cv2.SimpleBlobDetector_create(params)
 
 def get_blobs(frame):
@@ -22,7 +31,6 @@ def get_dice_from_blobs(blobs):
     X = []
     for b in blobs:
         pos = b.pt
-
         if pos != None:
             X.append(pos)
 

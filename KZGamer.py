@@ -21,7 +21,7 @@ picam2.start()
 
 entropy = Entropy()
 trapDoor = TrapDoor()
-trapDoor.home()
+trapDoor.reHome()
 
 loopState = "waiting"
 settleFrames = 10

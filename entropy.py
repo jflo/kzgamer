@@ -1,5 +1,5 @@
 from bitarray import bitarray
-from bitarray import bitarray.util
+from bitarray import util
 
 class Entropy:
 
