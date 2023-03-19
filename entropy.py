@@ -4,7 +4,7 @@ from bitarray import util
 class Entropy:
 
     def __init__(self):
-        self.runningEntropy = bitarray()
+        self.running_entropy = bitarray()
 
     def entropy_add(self, dice) :
         for d in dice:
@@ -12,13 +12,16 @@ class Entropy:
             bit1 = rolled & 1
             bit2 = (rolled >> 1) & 1
             bit3 = (rolled >> 2) & 1
-            self.runningEntropy.append(bit2)
-            self.runningEntropy.append(bit1)
-            self.runningEntropy.append(bit3)
+            self.running_entropy.append(bit2)
+            self.running_entropy.append(bit1)
+            self.running_entropy.append(bit3)
 
     def entropy_full(self):
-        return len(self.runningEntropy) >= 1024
+        return len(self.running_entropy) >= 1024
 
-    def toHexString(self):
-        if self.runningEntropy % 4 == 0:
-            return bitarray.util.ba2hex(self.runningEntropy)
+    def to_hex_string(self):
+        if self.running_entropy % 4 == 0:
+            return bitarray.util.ba2hex(self.running_entropy)
+
+    def bits_collected(self):
+        return len(self.running_entropy)

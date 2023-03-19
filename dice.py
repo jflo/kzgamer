@@ -22,7 +22,7 @@ def get_blobs(frame):
     return blobs
 
 def simplify_dice(complex_dice) :
-    simple_dice = [sub_array[0] for sub_array in  complex_dice]
+    simple_dice = [sub_array[0] for sub_array in complex_dice]
     simple_dice.sort()
     return simple_dice
 

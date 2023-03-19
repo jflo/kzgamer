@@ -1,14 +1,16 @@
 import cv2
+import sys
 import time
 from picamera2 import Picamera2, Preview
-from libcamera import controls
 from dice import get_blobs, get_dice_from_blobs, simplify_dice
 from vid_markup import overlay_info
 from entropy import Entropy
 from trapdoor import TrapDoor
-from gpiozero import LED
 from preprocess import preprocess
 import subprocess
+from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtCore
+from MainWindow import MainWindow
 
 picam2 = Picamera2()
 picam2.preview_configuration.main.size = (800, 480)
@@ -20,15 +22,20 @@ time.sleep(2)
 picam2.start()
 
 entropy = Entropy()
-trapDoor = TrapDoor()
-trapDoor.reHome()
+trap_door = TrapDoor()
+trap_door.re_home()
 
-loopState = "waiting"
-settleFrames = 10
-seenSince = 0
-currentDice = 0
+loop_state = "waiting"
+settle_frames = 10
+seen_since = 0
+current_dice = 0
 
-while not entropy.entropy_full():
+app = QApplication(sys.argv)
+ui = MainWindow()
+ui.setWindowState(QtCore.Qt.WindowMaximized)
+ui.show()
+
+while True:
     frame = picam2.capture_array()
     # check for dice
     processed = preprocess(frame)
@@ -37,26 +44,32 @@ while not entropy.entropy_full():
     simple_dice = simplify_dice(dice)
 
     # are these the same dice from the last N frames?
-    if currentDice == simple_dice and len(simple_dice) > 0:
-      seenSince+=1
-      loopState = "dice stabilizing"
-    if seenSince > settleFrames:
+    if current_dice == simple_dice and len(simple_dice) > 0:
+      seen_since+=1
+      loop_state = "dice stabilizing"
+    if seen_since > settle_frames:
       # parse dice and append to entropy
-      loopState = "dice stable"
+      loop_state = "dice stable"
       entropy.entropy_add(simple_dice)
       # open trapDoor for 2 sec, close it back up
-      trapDoor.springAndReset()
-      seenSince = 0
+      trap_door.spring_and_reset()
+      seen_since = 0
     else:
-        loopState = "watching"
+        loop_state = "watching"
 
-    out_frame = overlay_info(processed, dice, blobs, loopState)
+    overlay_info(processed, dice, blobs, loop_state)
     cv2.imshow('frame', processed)
-    currentDice = simple_dice
+    current_dice = simple_dice
+    num_hits = len([num for num in current_dice if num >= ui.hitting_on])
+    num_sixes = len([ num for num in current_dice if num == 6])
+    num_bits_collected = entropy.bits_collected()
+    ui.log_roll(num_hits, len(current_dice), num_sixes, num_bits_collected)
     if entropy.entropy_full():
-        hex = entropy.runningEntropy.toHexString()
+        hex = entropy.to_hex_string()
         subprocess.run(["ls -l"], capture_output=True)
         subprocess.run(["kzgcli offline contribute ceremony-state.json kzgamer-contribution.json --entropy-hex {hex}"],capture_output=True)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        sys.exit(app.exec_())
         break
+
