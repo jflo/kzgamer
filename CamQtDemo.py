@@ -4,6 +4,7 @@
 
 VERSION = "Cam_display v0.10"
 
+from picamera2 import Picamera2
 import sys, time, threading, cv2
 try:
     from PyQt5.QtCore import Qt
@@ -16,10 +17,7 @@ if pyqt5:
     from PyQt5.QtWidgets import QWidget, QAction, QVBoxLayout, QHBoxLayout
     from PyQt5.QtGui import QFont, QPainter, QImage, QTextCursor
 else:
-    from PyQt4.QtCore import Qt, pyqtSignal, QTimer, QPoint
-    from PyQt4.QtGui import QApplication, QMainWindow, QTextEdit, QLabel
-    from PyQt4.QtGui import QWidget, QAction, QVBoxLayout, QHBoxLayout
-    from PyQt4.QtGui import QFont, QPainter, QImage, QTextCursor
+    sys.exit()
 try:
     import Queue as Queue
 except:
@@ -39,25 +37,21 @@ capturing   = True              # Flag to indicate capturing
 
 # Grab images from the camera (separate thread)
 def grab_images(cam_num, queue):
-    cap = cv2.VideoCapture(cam_num-1 + CAP_API)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, IMG_SIZE[0])
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, IMG_SIZE[1])
-    if EXPOSURE:
-        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
-        cap.set(cv2.CAP_PROP_EXPOSURE, EXPOSURE)
-    else:
-        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+    picam2 = Picamera2()
+    picam2.preview_configuration.main.size = (800, 480)
+    picam2.preview_configuration.main.format = "RGB888"
+    picam2.preview_configuration.align()
+    picam2.configure("preview")
+    picam2.set_controls({"AnalogueGain" : 16.0, "Contrast": 1.0})
+    time.sleep(2)
+    picam2.start()
     while capturing:
-        if cap.grab():
-            retval, image = cap.retrieve(0)
-            if image is not None and queue.qsize() < 2:
-                queue.put(image)
-            else:
-                time.sleep(DISP_MSEC / 1000.0)
+        frame = picam2.capture_array()
+        if frame is not None and queue.qsize() < 2:
+            queue.put(frame)
         else:
-            print("Error: can't grab camera image")
-            break
-    cap.release()
+            time.sleep(DISP_MSEC / 1000.0)
+
 
 # Image widget
 class ImageWidget(QWidget):
