@@ -1,4 +1,7 @@
 import cv2
+import os
+os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
+os.environ.update({"QT_QPA_PLATFORM_PLUGIN_PATH":"/usr/lib/aarch64-linux-gnu/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so"})
 import sys
 import time
 from picamera2 import Picamera2, Preview

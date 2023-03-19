@@ -5,6 +5,9 @@
 VERSION = "Cam_display v0.10"
 
 import sys, time, threading, cv2
+import os
+os.environ.update({"QT_QPA_PLATFORM_PLUGIN_PATH":"/usr/lib/aarch64-linux-gnu/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so"})
+
 try:
     from PyQt5.QtCore import Qt
     pyqt5 = True
