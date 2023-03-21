@@ -1,5 +1,4 @@
 import sys
-import cv2
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QGridLayout, QPushButton, QTextEdit, QLabel
@@ -44,10 +43,6 @@ class MainWindow(QWidget):
         main_layout.addLayout(button_layout)
         self.setLayout(main_layout)
 
-        # Initialize the video frame provider and display the first frame
-        #self.video_frame_provider = VideoFrameProvider()
-        #self.update_video_pane()
-
     def button_click_handler(self):
         sender = self.sender()
         self.text_pane.append(sender.text())
@@ -55,14 +50,6 @@ class MainWindow(QWidget):
 
     @pyqtSlot(QPixmap)
     def update_video_pane(self, pixmap):
-        #frame = self.video_frame_provider.get_frame()
-
-        # Convert the frame to a QImage
-        #height, width, channel = frame.shape
-        #bytes_per_line = 3 * width
-        #qimage = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-        # Set the QImage as the pixmap of the video pane QLabel
         self.video_pane.setPixmap(pixmap)
 
     @pyqtSlot(object)
@@ -74,7 +61,6 @@ def main():
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
-    main_window.setWindowState(QtCore.Qt.WindowMaximized)
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

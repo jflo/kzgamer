@@ -60,6 +60,7 @@ class KZGamerThread(QThread):
         self.running = True
         seen_since = 0
         current_dice = 0
+        simple_dice = []
         while self.running:
             if picam_available:
                 frame = self.camera.capture_array()
@@ -67,9 +68,9 @@ class KZGamerThread(QThread):
                 ret, frame = self.camera.read()
             # check for dice
             processed = preprocess(frame)
-            blobs = get_blobs(processed)
-            dice = get_dice_from_blobs(blobs)
-            simple_dice = simplify_dice(dice)
+            #blobs = get_blobs(processed)
+            #dice = get_dice_from_blobs(blobs)
+            #simple_dice = simplify_dice(dice)
 
             # are these the same dice from the last N frames?
             if current_dice == simple_dice and len(simple_dice) > 0:
@@ -85,8 +86,8 @@ class KZGamerThread(QThread):
               seen_since = 0
             else:
                 loop_state = "watching"
-            self.vid_display.set_frame(processed)
-            self.vid_display.overlay_info( dice, blobs, loop_state)
+            self.vid_display.set_frame(frame)
+            #self.vid_display.overlay_info( dice, blobs, loop_state)
 
             current_dice = simple_dice
             num_hits = len([num for num in current_dice if num >= self.hitting_on])

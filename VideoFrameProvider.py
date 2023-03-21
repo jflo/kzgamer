@@ -11,19 +11,27 @@ class VideoFrameProvider(QObject):
         self.frame = None
 
     def set_frame(self, frame):
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        height, width = gray.shape[:2]
-
-        # Set the scaling factor
-        scale_factor = 0.5
-
-        # Calculate the new dimensions of the image
-        new_height = int(height * scale_factor)
-        new_width = int(width * scale_factor)
-
-        # Resize the image using cv2.resize
-        resized_img = cv2.resize(gray, (new_width, new_height))
-        self.frame = resized_img
+        #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        self.frame = frame
+        #q_image = QImage(self.frame.data, self.frame.shape[1], self.frame.shape[0], QImage.Format_RGB888)
+        #pixmap = QPixmap.fromImage(q_image)
+        height, width, channel = frame.shape
+        bytesPerLine = 3 * width
+        qImg = QImage(frame.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
+        self.new_frame.emit(QPixmap.fromImage(qImg))
+        #
+        # height, width = gray.shape[:2]
+        #
+        # # Set the scaling factor
+        # scale_factor = 0.5
+        #
+        # # Calculate the new dimensions of the image
+        # new_height = int(height * scale_factor)
+        # new_width = int(width * scale_factor)
+        #
+        # # Resize the image using cv2.resize
+        # resized_img = cv2.resize(gray, (new_width, new_height))
+        # self.frame = resized_img
 
     def overlay_info(self, dice, blobs, message):
         # Overlay blobs
