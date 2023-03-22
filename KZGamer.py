@@ -96,8 +96,6 @@ class KZGamerThread(QThread):
             roll_message = f"{num_hits} on {len(current_dice)} dice, {num_sixes} exploded - {num_bits_collected} total bits of entropy collected"
             self.new_roll.emit(roll_message)
 
-            #ui.log_roll(num_hits, len(current_dice), num_sixes, num_bits_collected)
-
             if self.entropy.entropy_full():
                 hex = self.entropy.to_hex_string()
                 subprocess.run(["ls -l"], capture_output=True)
