@@ -86,7 +86,7 @@ class KZGamerThread(QThread):
               seen_since = 0
             else:
                 loop_state = "watching"
-            self.vid_display.set_frame(frame)
+            self.vid_display.set_frame(processed)
             #self.vid_display.overlay_info( dice, blobs, loop_state)
 
             current_dice = simple_dice
