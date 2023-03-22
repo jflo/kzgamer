@@ -68,33 +68,32 @@ class KZGamerThread(QThread):
                 ret, frame = self.camera.read()
             # check for dice
             processed = preprocess(frame)
-            #blobs = get_blobs(processed)
-            #dice = get_dice_from_blobs(blobs)
-            #simple_dice = simplify_dice(dice)
+            blobs = get_blobs(processed)
+            dice = get_dice_from_blobs(blobs)
+            simple_dice = simplify_dice(dice)
 
             # are these the same dice from the last N frames?
             if current_dice == simple_dice and len(simple_dice) > 0:
-              seen_since+=1
-              loop_state = "dice stabilizing"
+                seen_since+=1
+                loop_state = "dice stabilizing"
             if seen_since > self.settle_frames:
-              # parse dice and append to entropy
-              loop_state = "dice stable"
-              self.entropy.entropy_add(simple_dice)
-              # open trapDoor for 2 sec, close it back up
-              if picam_available:
-                self.trap_door.spring_and_reset()
-              seen_since = 0
+                # parse dice and append to entropy
+                loop_state = "dice stable"
+                self.entropy.entropy_add(simple_dice)
+                current_dice = simple_dice
+                num_hits = len([num for num in current_dice if num >= self.hitting_on])
+                num_sixes = len([ num for num in current_dice if num == 6])
+                num_bits_collected = self.entropy.bits_collected()
+                roll_message = f"{num_hits} on {len(current_dice)} dice, {num_sixes} exploded - {num_bits_collected} total bits of entropy collected"
+                self.new_roll.emit(roll_message)
+
+                if picam_available:
+                    self.trap_door.spring_and_reset()
+                    seen_since = 0
             else:
                 loop_state = "watching"
-            self.vid_display.set_frame(processed)
-            #self.vid_display.overlay_info( dice, blobs, loop_state)
 
-            current_dice = simple_dice
-            num_hits = len([num for num in current_dice if num >= self.hitting_on])
-            num_sixes = len([ num for num in current_dice if num == 6])
-            num_bits_collected = self.entropy.bits_collected()
-            roll_message = f"{num_hits} on {len(current_dice)} dice, {num_sixes} exploded - {num_bits_collected} total bits of entropy collected"
-            self.new_roll.emit(roll_message)
+            self.vid_display.overlay_info(processed, dice, blobs, loop_state)
 
             if self.entropy.entropy_full():
                 hex = self.entropy.to_hex_string()
