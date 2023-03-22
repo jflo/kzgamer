@@ -8,7 +8,7 @@ from KZGamer import KZGamerThread
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setGeometry(100, 100, 800, 480)  # Set the initial geometry
+        self.setGeometry(0, 0, 480, 800)  # Set the initial geometry
         self.kzgamer_thread = KZGamerThread(self)
         self.kzgamer_thread.vid_display.new_frame.connect(self.update_video_pane)
         self.kzgamer_thread.new_roll.connect(self.log_roll)
