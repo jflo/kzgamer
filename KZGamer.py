@@ -8,6 +8,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 try :
     from picamera2 import Picamera2, Preview
     picam_available = True
+    from libcamera import controls
     # avoids using the QT bundled with opencv
     os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
     os.environ.update({"QT_QPA_PLATFORM_PLUGIN_PATH":"/usr/lib/aarch64-linux-gnu/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so"})
@@ -34,6 +35,7 @@ class KZGamerThread(QThread):
             self.camera = Picamera2()
             config = self.camera.create_video_configuration()
             self.camera.configure(config)
+            self.camera.set_controls({"Brightness":-0.5})
             time.sleep(1)
             self.camera.start()
             #if picam is available, we're on the pi and io is available
