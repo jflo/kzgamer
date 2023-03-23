@@ -32,6 +32,8 @@ class KZGamerThread(QThread):
         self.running = False
         if picam_available:
             self.camera = Picamera2()
+            config = self.camera.create_video_configuration()
+            self.camera.configure(config)
             time.sleep(1)
             self.camera.start()
             #if picam is available, we're on the pi and io is available
