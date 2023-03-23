@@ -32,11 +32,6 @@ class KZGamerThread(QThread):
         self.running = False
         if picam_available:
             self.camera = Picamera2()
-            self.camera.preview_configuration.main.format = "RGB888"
-            self.camera.preview_configuration.main.size = (800, 480)
-            self.camera.preview_configuration.align()
-            self.camera.configure("preview")
-            self.camera.set_controls({"AnalogueGain" : 16.0, "Contrast": 1.0})
             time.sleep(1)
             self.camera.start()
             #if picam is available, we're on the pi and io is available
