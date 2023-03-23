@@ -5,12 +5,14 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QGridLayout, QPu
 from PyQt5.QtGui import QImage, QPixmap
 from KZGamer import KZGamerThread
 
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setGeometry(0, 50, 480, 800)  # Set the initial geometry
         self.kzgamer_thread = KZGamerThread(self)
-        self.kzgamer_thread.vid_display.new_frame.connect(self.update_video_pane)
+        if "--debug" in sys.argv:
+            self.kzgamer_thread.vid_display.new_frame.connect(self.update_video_pane)
         self.kzgamer_thread.new_roll.connect(self.log_roll)
         self.init_ui()
         self.kzgamer_thread.start()
