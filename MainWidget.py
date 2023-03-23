@@ -9,7 +9,7 @@ from KZGamer import KZGamerThread
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setGeometry(0, 50, 480, 800)  # Set the initial geometry
+        self.setGeometry(0, 100, 480, 800)  # Set the initial geometry
         self.kzgamer_thread = KZGamerThread(self)
         if "--debug" in sys.argv:
             self.kzgamer_thread.vid_display.new_frame.connect(self.update_video_pane)
@@ -22,8 +22,11 @@ class MainWindow(QWidget):
 
         main_layout = QVBoxLayout()
 
+        camera_w = 1536
+        camera_h = 864
         # Video pane
         self.video_pane = QLabel()
+        self.video_pane.setFixedSize(int(camera_w/4), int(camera_h/4))
         main_layout.addWidget(self.video_pane)
 
         # Text pane
