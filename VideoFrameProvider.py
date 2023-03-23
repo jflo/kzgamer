@@ -36,7 +36,7 @@ class VideoFrameProvider(QObject):
 
         h, w, c = markup_frame.shape
         converted = QImage(markup_frame.data, w, h, w*c, QImage.Format_RGB888)
-        converted = converted.scaled(480, 480, 1)  # 1 keeps aspect ratio
+        converted = converted.scaledToWidth(480)  # 1 keeps aspect ratio
         display_frame = QPixmap.fromImage(converted)
 
         self.new_frame.emit(display_frame)
