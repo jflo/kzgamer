@@ -9,7 +9,6 @@ from KZGamer import KZGamerThread
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setGeometry(0, 100, 480, 800)  # Set the initial geometry
         self.kzgamer_thread = KZGamerThread(self)
         if "--debug" in sys.argv:
             self.kzgamer_thread.vid_display.new_frame.connect(self.update_video_pane)
@@ -18,7 +17,7 @@ class MainWindow(QWidget):
         self.kzgamer_thread.start()
 
     def init_ui(self):
-        self.setWindowTitle("Video Pane and Text Pane with Buttons")
+        self.setWindowTitle("KZGamer")
 
         main_layout = QVBoxLayout()
         # Video pane
