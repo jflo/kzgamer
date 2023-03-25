@@ -8,6 +8,7 @@ params.filterByInertia
 #filter out things too elongated, likely not on top face
 params.minInertiaRatio = 0.75
 params.maxInertiaRatio = 1
+params.minCircularity = 0.5
 params.minCircularity = 0.6
 params.maxCircularity = 1
 params.blobColor = 0
