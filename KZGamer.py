@@ -5,10 +5,12 @@ import sys
 import time
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 
-try :
+try:
     from picamera2 import Picamera2, Preview
+
     picam_available = True
     from libcamera import controls
+
     # avoids using the QT bundled with opencv
     os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
     os.environ.update({"QT_QPA_PLATFORM_PLUGIN_PATH":"/usr/lib/aarch64-linux-gnu/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so"})
@@ -19,6 +21,7 @@ except:
 from dice import get_blobs, get_dice_from_blobs, simplify_dice
 from VideoFrameProvider import VideoFrameProvider
 from entropy import Entropy
+
 if picam_available:
     from trapdoor import TrapDoor
 from preprocess import preprocess
@@ -28,6 +31,7 @@ import subprocess
 class KZGamerThread(QThread):
     ui_update = pyqtSignal(object)
     new_roll = pyqtSignal(object)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.running = False
@@ -35,15 +39,14 @@ class KZGamerThread(QThread):
             self.camera = Picamera2()
             config = self.camera.create_still_configuration()
             self.camera.configure(config)
-            self.camera.set_controls({"Brightness":-0.5})
+            self.camera.set_controls({"Brightness": -0.5})
             time.sleep(1)
             self.camera.start()
-            #if picam is available, we're on the pi and io is available
+            # if picam is available, we're on the pi and io is available
             self.trap_door = TrapDoor()
             self.trap_door.re_home()
         else:
             self.camera = cv2.VideoCapture(0)
-
 
         self.entropy = Entropy()
         self.loop_state = "waiting"
@@ -75,7 +78,7 @@ class KZGamerThread(QThread):
 
             # are these the same dice from the last N frames?
             if current_dice == simple_dice and len(simple_dice) > 0:
-                seen_since+=1
+                seen_since += 1
                 loop_state = "dice stabilizing"
                 self.vid_display.overlay_info(processed, dice, blobs, loop_state)
             if seen_since > self.settle_frames:
@@ -85,9 +88,10 @@ class KZGamerThread(QThread):
                 self.entropy.entropy_add(simple_dice)
                 current_dice = simple_dice
                 num_hits = len([num for num in current_dice if num >= self.hitting_on])
-                num_sixes = len([ num for num in current_dice if num == 6])
+                num_sixes = len([num for num in current_dice if num == 6])
                 num_bits_collected = self.entropy.bits_collected()
-                roll_message = f"{num_hits} on {len(current_dice)} dice, {num_sixes} exploded - {num_bits_collected} total bits of entropy collected"
+                roll_message = f"{num_hits} on {len(current_dice)} dice, {num_sixes} exploded - {num_bits_collected}" \
+                               f" total bits of entropy collected"
                 self.new_roll.emit(roll_message)
 
                 if picam_available:
@@ -101,7 +105,8 @@ class KZGamerThread(QThread):
             if self.entropy.entropy_full():
                 hex = self.entropy.to_hex_string()
                 subprocess.run(["ls -l"], capture_output=True)
-                subprocess.run(["kzgcli offline contribute ceremony-state.json kzgamer-contribution.json --entropy-hex {hex}"],capture_output=True)
+                command = f"kzgcli offline contribute ceremony-state.json kzgamer-contribution.json --entropy-hex {hex}"
+                subprocess.run([command], capture_output=True)
 
     def stop(self):
         self.running = False
