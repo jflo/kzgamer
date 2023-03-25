@@ -40,6 +40,7 @@ class VideoFrameProvider(QObject):
         display_frame = QPixmap.fromImage(converted)
 
         self.new_frame.emit(display_frame)
+        cv2.imwrite("frame.png", markup_frame)
         #q_image = QImage(self.frame.data, self.frame.shape[1], self.frame.shape[0], QImage.Format_RGB888)
         #pixmap = QPixmap.fromImage(q_image)
         #self.new_frame.emit(pixmap)

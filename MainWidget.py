@@ -1,8 +1,8 @@
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QGridLayout, QPushButton, QTextEdit, QLabel
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QGridLayout, QPushButton, QTextEdit, QLabel, QSizePolicy
+from PyQt5.QtGui import QImage, QPixmap, QFont
 from KZGamer import KZGamerThread
 
 
@@ -33,14 +33,17 @@ class MainWindow(QWidget):
         button_layout = QGridLayout()
         button_layout.setSpacing(0)
         button_layout.setContentsMargins(0, 0, 0, 0)
+        button_size = 100
+        buton_font = QFont("Helvetica", 24)
 
         for i in range(1, 7):
             button = QPushButton(str(i))
             button.clicked.connect(self.button_click_handler)
             row = (i - 1) // 3
             col = (i - 1) % 3
+            button.setMinimumSize(button_size, button_size)
+            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             button_layout.addWidget(button, row, col)
-
 
         main_layout.addLayout(button_layout)
         self.setLayout(main_layout)

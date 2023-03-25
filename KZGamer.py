@@ -80,11 +80,10 @@ class KZGamerThread(QThread):
             if current_dice == simple_dice and len(simple_dice) > 0:
                 seen_since += 1
                 loop_state = "dice stabilizing"
-                self.vid_display.overlay_info(processed, dice, blobs, loop_state)
+                #self.vid_display.overlay_info(processed, dice, blobs, loop_state)
             if seen_since > self.settle_frames:
                 # parse dice and append to entropy
                 loop_state = "dice stable"
-                self.vid_display.overlay_info(processed, dice, blobs, loop_state)
                 self.entropy.entropy_add(simple_dice)
                 current_dice = simple_dice
                 num_hits = len([num for num in current_dice if num >= self.hitting_on])
@@ -93,6 +92,8 @@ class KZGamerThread(QThread):
                 roll_message = f"{num_hits} on {len(current_dice)} dice, {num_sixes} exploded - {num_bits_collected}" \
                                f" total bits of entropy collected"
                 self.new_roll.emit(roll_message)
+                if len(self.simple_dice) > 0:
+                    self.vid_display.overlay_info(processed, dice, blobs, loop_state)
 
                 if picam_available:
                     self.trap_door.spring_and_reset()
@@ -100,7 +101,7 @@ class KZGamerThread(QThread):
             else:
                 loop_state = "watching"
 
-            self.vid_display.overlay_info(processed, dice, blobs, loop_state)
+            #self.vid_display.overlay_info(processed, dice, blobs, loop_state)
 
             if self.entropy.entropy_full():
                 hex = self.entropy.to_hex_string()
