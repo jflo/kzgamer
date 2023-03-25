@@ -19,7 +19,7 @@ class TrapDoor:
         self.door = servo.Servo(self.pca.channels[0])
         self.home = 80
         self.top = 90
-        self.bottom = 30
+        self.bottom = 10
         self.spring_and_reset()
 
     def spring_and_reset(self):
