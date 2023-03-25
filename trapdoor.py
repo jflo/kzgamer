@@ -17,27 +17,29 @@ class TrapDoor:
         self.pca = PCA9685(i2c, address=96)
         self.pca.frequency = 50 #most servos default to 50hz pulse width
         self.door = servo.Servo(self.pca.channels[0])
-        self.home = 88
-        self.top = 90
-        self.bottom = 0
+        self.home = 0
+        self.top = 2
+        self.bottom = -90
         self.re_home()
 
     def re_home(self):
         self.kit.motor1.throttle = 1
         time.sleep(.25)
-        self.door.angle = self.top
+        self.door.angle = self.bottom
         time.sleep(1)
+        self.door.angle = self.top
         self.kit.motor1.throttle = None
         self.door.angle = self.home
 
 
+
     def spring_and_reset(self):
         self.kit.motor1.throttle = 1
-        time.sleep(1)
+        time.sleep(.25)
         self.door.angle = self.bottom
         time.sleep(1)
         self.door.angle = self.top
-        time.sleep(1)
+        time.sleep(.25)
         self.kit.motor1.throttle = None
         time.sleep(1)
         self.door.angle = self.home
