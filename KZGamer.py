@@ -33,9 +33,9 @@ class KZGamerThread(QThread):
         self.running = False
         if picam_available:
             self.camera = Picamera2()
-            config = self.camera.create_video_configuration()
+            config = self.camera.create_still_configuration()
             self.camera.configure(config)
-            self.camera.set_controls({"Brightness":-0.5})
+            #self.camera.set_controls({"Brightness":-0.5})
             time.sleep(1)
             self.camera.start()
             #if picam is available, we're on the pi and io is available
@@ -47,9 +47,10 @@ class KZGamerThread(QThread):
 
         self.entropy = Entropy()
         self.loop_state = "waiting"
-        self.settle_frames = 10
+        self.settle_frames = 3
         self.hitting_on = 4
         self.vid_display = VideoFrameProvider()
+        self.frame_capture_delay = 0.1
 
     @pyqtSlot(object)
     def target_selected(self, target_number):
@@ -61,6 +62,7 @@ class KZGamerThread(QThread):
         current_dice = 0
         simple_dice = []
         while self.running:
+            time.sleep(self.frame_capture_delay)
             if picam_available:
                 frame = self.camera.capture_array()
             else:
@@ -75,9 +77,11 @@ class KZGamerThread(QThread):
             if current_dice == simple_dice and len(simple_dice) > 0:
                 seen_since+=1
                 loop_state = "dice stabilizing"
+                self.vid_display.overlay_info(processed, dice, blobs, loop_state)
             if seen_since > self.settle_frames:
                 # parse dice and append to entropy
                 loop_state = "dice stable"
+                self.vid_display.overlay_info(processed, dice, blobs, loop_state)
                 self.entropy.entropy_add(simple_dice)
                 current_dice = simple_dice
                 num_hits = len([num for num in current_dice if num >= self.hitting_on])

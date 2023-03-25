@@ -47,7 +47,7 @@ class MainWindow(QWidget):
 
     def button_click_handler(self):
         sender = self.sender()
-        self.text_pane.append(sender.text())
+        self.text_pane.append(f"hitting on {sender.text()}s")
         self.kzgamer_thread.target_selected(int(sender.text()))
 
     @pyqtSlot(QPixmap)

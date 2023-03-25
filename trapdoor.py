@@ -25,7 +25,8 @@ class TrapDoor:
     def re_home(self):
         self.kit.motor1.throttle = 1
         time.sleep(.25)
-        self.door.angle = self.top
+        self.door.angle = self.bottom
+
         time.sleep(1)
         self.kit.motor1.throttle = None
         self.door.angle = self.home
