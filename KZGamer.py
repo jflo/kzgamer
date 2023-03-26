@@ -71,6 +71,7 @@ class KZGamerThread(QThread):
             else:
                 ret, frame = self.camera.read()
             # check for dice
+            cv2.imwrite("rawframe.png", frame)
             processed = preprocess(frame)
             blobs = get_blobs(processed)
             dice = get_dice_from_blobs(blobs)
