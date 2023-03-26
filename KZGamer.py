@@ -7,16 +7,17 @@ from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 
 try:
     from picamera2 import Picamera2, Preview
-
+    print("picam available")
     picam_available = True
     from libcamera import controls
-
+    print("got controls")
     # avoids using the QT bundled with opencv
-    os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
-    os.environ.update({"QT_QPA_PLATFORM_PLUGIN_PATH":"/usr/lib/aarch64-linux-gnu/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so"})
+    #os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
+    #os.environ.update({"QT_QPA_PLATFORM_PLUGIN_PATH":"/usr/lib/aarch64-linux-gnu/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so"})
 
 except:
     picam_available = False
+    print("exception during picam setup")
 
 from dice import get_blobs, get_dice_from_blobs, simplify_dice
 from VideoFrameProvider import VideoFrameProvider
@@ -37,10 +38,11 @@ class KZGamerThread(QThread):
         self.running = False
         if picam_available:
             self.camera = Picamera2()
-            self.camera.start_preview(Preview.NULL)
-            self.capture_config = self.camera.create_still_configuration(raw={}, display=None)
+            #self.camera.start_preview(Preview.NULL)
+            self.capture_config = self.camera.create_still_configuration()
             self.camera.configure(self.capture_config)
             self.camera.start()
+            print("camera configured and started")
             time.sleep(2)
             self.camera.set_controls({"Brightness": -0.5})
             # if picam is available, we're on the pi and io is available
