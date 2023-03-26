@@ -1,5 +1,11 @@
-adafruit_pca9685==1.0.1
 bitarray==2.7.3
 board==1.0
 numpy==1.24.2
 scikit_learn==1.2.2
+adafruit-circuitpython-busdevice==5.2.3
+adafruit-circuitpython-motor==3.4.9
+adafruit-circuitpython-motorkit==1.6.11
+adafruit-circuitpython-pca9685==3.4.8
+adafruit-circuitpython-register==1.9.15
+adafruit-circuitpython-requests==1.13.0
+adafruit-circuitpython-typing==1.8.3
