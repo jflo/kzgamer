@@ -19,8 +19,8 @@ class VideoFrameProvider(QObject):
             output_frame = frame
 
         h, w, c = output_frame.shape
-        scaled = QImage(output_frame.data, w, h, w*c, QImage.Format_RGB888)
-        scaled.scaledToWidth(450)
+        qimg = QImage(output_frame.data, w, h, w*c, QImage.Format_RGB888)
+        scaled = qimg.scaledToWidth(450)
         pixmap = QPixmap.fromImage(scaled)
         self.new_frame.emit(pixmap)
 

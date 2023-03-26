@@ -10,8 +10,8 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.kzgamer_thread = KZGamerThread(self)
-        if "--debug" in sys.argv:
-            self.kzgamer_thread.vid_display.new_frame.connect(self.update_video_pane)
+        #if "--debug" in sys.argv:
+        self.kzgamer_thread.vid_display.new_frame.connect(self.update_video_pane)
         self.kzgamer_thread.new_roll.connect(self.log_roll)
         self.init_ui()
         self.kzgamer_thread.start()
