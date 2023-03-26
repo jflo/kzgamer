@@ -36,7 +36,9 @@ class KZGamerThread(QThread):
             self.capture_config = self.camera.create_still_configuration() 
             self.camera.configure(self.capture_config)
             self.camera.set_controls({"AfMode": controls.AfModeEnum.Continuous,
-                                      "AeConstraintMode": controls.AeConstraintModeEnum.Highlight})
+                                      "AeConstraintMode": controls.AeConstraintModeEnum.Highlight,
+                                      "AeMeteringMode": controls.AeMeteringModeEnum.Spot,
+                                      "ExposureValue": -1})
             self.camera.start()
             time.sleep(1)
             #self.camera.set_controls({"Brightness": -0.5})
