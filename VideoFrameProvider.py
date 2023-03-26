@@ -11,7 +11,13 @@ class VideoFrameProvider(QObject):
         super().__init__()
 
     def show_frame(self, frame):
-        output_frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
+        if len(frame.shape) == 3:
+            output_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        elif len(frame.shape) == 2:
+            output_frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
+        else:
+            output_frame = frame
+
         h, w, c = output_frame.shape
         scaled = QImage(output_frame.data, w, h, w*c, QImage.Format_RGB888)
         scaled.scaledToWidth(450)
