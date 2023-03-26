@@ -1,0 +1,5 @@
+adafruit_pca9685==1.0.1
+bitarray==2.7.3
+board==1.0
+numpy==1.24.2
+scikit_learn==1.2.2
