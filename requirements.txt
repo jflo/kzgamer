@@ -1,0 +1,8 @@
+adafruit_pca9685==1.0.1
+bitarray==2.7.3
+board==1.0
+numpy==1.24.2
+opencv_python==4.7.0.68
+picamera2==0.3.9
+PyQt5==5.15.9
+scikit_learn==1.2.2
