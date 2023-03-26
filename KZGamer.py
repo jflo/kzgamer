@@ -69,10 +69,10 @@ class KZGamerThread(QThread):
             time.sleep(self.frame_capture_delay)
             if picam_available:
                 frame = self.camera.capture_array()
+                print("frame length: ", len(frame))
             else:
                 ret, frame = self.camera.read()
             # check for dice
-            cv2.imwrite("rawframe.png", frame)
             processed = preprocess(frame)
             blobs = get_blobs(processed)
             dice = get_dice_from_blobs(blobs)
