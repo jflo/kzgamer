@@ -7,14 +7,8 @@ from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 
 try:
     from picamera2 import Picamera2, Preview
-    print("picam available")
     picam_available = True
     from libcamera import controls
-    print("got controls")
-    # avoids using the QT bundled with opencv
-    #os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
-    #os.environ.update({"QT_QPA_PLATFORM_PLUGIN_PATH":"/usr/lib/aarch64-linux-gnu/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so"})
-
 except:
     picam_available = False
     print("exception during picam setup")
@@ -42,8 +36,7 @@ class KZGamerThread(QThread):
             self.capture_config = self.camera.create_still_configuration()
             self.camera.configure(self.capture_config)
             self.camera.start()
-            print("camera configured and started")
-            time.sleep(2)
+            time.sleep(1)
             self.camera.set_controls({"Brightness": -0.5})
             # if picam is available, we're on the pi and io is available
             self.trap_door = TrapDoor()
@@ -73,8 +66,11 @@ class KZGamerThread(QThread):
             else:
                 ret, frame = self.camera.read()
             # check for dice
+            self.vid_display.show_frame(frame)
+            time.sleep(1)
             processed = preprocess(frame)
             self.vid_display.show_frame(processed)
+            time.sleep(1)
             blobs = get_blobs(processed)
             dice = get_dice_from_blobs(blobs)
             simple_dice = simplify_dice(dice)
