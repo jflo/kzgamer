@@ -11,7 +11,12 @@ class VideoFrameProvider(QObject):
         super().__init__()
 
     def show_frame(self, frame):
-        h, w, c = frame.shape
+        # works with either grayscale or RGB
+        if len(frame.shape) == 3:
+            h, w, c = frame.shape
+        else:
+            h, w = frame.shape
+            c = 1
         scaled = QImage(frame.data, w, h, w*c, QImage.Format_RGB888)
         scaled.scaledToWidth(450)
         pixmap = QPixmap.fromImage(scaled)
