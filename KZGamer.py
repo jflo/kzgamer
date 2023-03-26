@@ -37,10 +37,9 @@ class KZGamerThread(QThread):
         self.running = False
         if picam_available:
             self.camera = Picamera2()
-            self.camera.start_preview(Preview.NONE)
-            self.preview_config = self.camera.create_preview_configuration()
+            self.camera.start_preview(Preview.NULL)
             self.capture_config = self.camera.create_still_configuration(raw={}, display=None)
-            self.camera.configure(self.preview_config)
+            self.camera.configure(self.capture_config)
             self.camera.start()
             time.sleep(2)
             self.camera.set_controls({"Brightness": -0.5})
@@ -69,10 +68,7 @@ class KZGamerThread(QThread):
         while self.running:
             time.sleep(self.frame_capture_delay)
             if picam_available:
-                r = self.camera.switch_mode_capture_request_and_stop(self.capture_config)
-                r.save("main", "full.jpg")
-                r.save_dng("full.dng")
-                frame = r.get_raw_frame()
+                frame = self.camera.capture_array()
             else:
                 ret, frame = self.camera.read()
             # check for dice
