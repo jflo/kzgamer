@@ -47,7 +47,6 @@ class KZGamerThread(QThread):
             self.camera.set_controls({"Brightness": -0.5})
             # if picam is available, we're on the pi and io is available
             self.trap_door = TrapDoor()
-            self.trap_door.spring_and_reset()
         else:
             self.camera = cv2.VideoCapture(0)
 
@@ -75,7 +74,7 @@ class KZGamerThread(QThread):
                 ret, frame = self.camera.read()
             # check for dice
             processed = preprocess(frame)
-            self.vid_display.emit(processed)
+            self.vid_display.show_frame(processed)
             blobs = get_blobs(processed)
             dice = get_dice_from_blobs(blobs)
             simple_dice = simplify_dice(dice)
