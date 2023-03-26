@@ -75,7 +75,7 @@ class KZGamerThread(QThread):
                 ret, frame = self.camera.read()
             # check for dice
             processed = preprocess(frame)
-            cv2.imwrite("processed.png", processed)
+            self.vid_display.emit(processed)
             blobs = get_blobs(processed)
             dice = get_dice_from_blobs(blobs)
             simple_dice = simplify_dice(dice)
@@ -98,7 +98,6 @@ class KZGamerThread(QThread):
                 self.new_roll.emit(roll_message)
                 if len(self.simple_dice) > 0:
                     self.vid_display.overlay_info(processed, dice, blobs, loop_state)
-
                 if picam_available:
                     self.trap_door.spring_and_reset()
                     seen_since = 0

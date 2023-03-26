@@ -22,7 +22,7 @@ class MainWindow(QWidget):
         main_layout = QVBoxLayout()
         # Video pane
         self.video_pane = QLabel()
-        self.video_pane.setFixedWidth(480)
+        #self.video_pane.setFixedWidth(480)
         main_layout.addWidget(self.video_pane)
 
         # Text pane
