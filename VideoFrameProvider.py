@@ -45,10 +45,10 @@ class VideoFrameProvider(QObject):
             cv2.putText(markup_frame, str(d[0]),
                         (int(d[1] - textsize[0] / 2),
                          int(d[2] + textsize[1] / 2)),
-                        cv2.FONT_HERSHEY_PLAIN, 6, (0, 255, 0), self.line_thickness)
+                        cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 255), self.line_thickness)
 
         
-        cv2.putText(markup_frame, message, self.messagePosition, cv2.FONT_HERSHEY_PLAIN, 12, (255,0,0),self.line_thickness)
+        #cv2.putText(markup_frame, message, self.messagePosition, cv2.FONT_HERSHEY_PLAIN, 12, (255,0,0),self.line_thickness)
 
         self.show_frame(markup_frame)
 
