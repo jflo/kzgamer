@@ -61,9 +61,9 @@ class KZGamerThread(QThread):
     def run(self):
         loop_state = "waiting"
         self.running = True
-        seen_since = 0
-        current_dice = 0
-        simple_dice = []
+        consistent_frames = 1
+        stabilizing_dice = []
+        last_stable_dice = []
         while self.running:
             time.sleep(self.frame_capture_delay)
             if picam_available:
@@ -72,49 +72,51 @@ class KZGamerThread(QThread):
             else:
                 ret, frame = self.camera.read()
             # check for dice
-            self.vid_display.show_frame(frame)
-            time.sleep(1)
+            #self.vid_display.show_frame(frame)
+            #time.sleep(1)
             processed = preprocess(frame)
-            cv2.imwrite("processed.png", processed)
-            self.vid_display.show_frame(processed)
-            time.sleep(1)
+            #self.vid_display.show_frame(processed)
+            #time.sleep(1)
             blobs = get_blobs(processed)
-            print(f"found {len(blobs)} blobs")
             dice = get_dice_from_blobs(blobs)
-            print(f"which seems like {len(dice)} dice")
-            simple_dice = simplify_dice(dice)
-            self.vid_display.overlay_info(processed, dice, blobs, loop_state)
             
+            stabilizing_dice = simplify_dice(dice)
+            #self.vid_display.overlay_info(processed, dice, blobs, loop_state)
+            if len(blobs) > 0 :
+                print(f"found {len(blobs)} blobs which seems like {len(dice)} dice")
+                print(stabilizing_dice)
+                print(last_stable_dice)
             # are these the same dice from the last N frames?
-            if current_dice == simple_dice and len(simple_dice) > 0:
-                seen_since += 1
+            if stabilizing_dice == last_stable_dice and len(stabilizing_dice) > 0:
+                consistent_frames += 1
                 loop_state = "dice stabilizing"
                 self.vid_display.overlay_info(processed, dice, blobs, loop_state)
-            if seen_since > self.settle_frames:
+                if consistent_frames >= self.settle_frames:
                 # parse dice and append to entropy
-                loop_state = "dice stable"
-                self.vid_display.overlay_info(processed, dice, blobs, loop_state)
-                self.entropy.entropy_add(simple_dice)
-                current_dice = simple_dice
-                num_hits = len([num for num in current_dice if num >= self.hitting_on])
-                num_sixes = len([num for num in current_dice if num == 6])
-                num_bits_collected = self.entropy.bits_collected()
-                roll_message = f"{num_hits} on {len(current_dice)} dice, {num_sixes} exploded - {num_bits_collected}" \
-                               f" total bits of entropy collected"
-                self.new_roll.emit(roll_message)
-                if len(self.simple_dice) > 0:
+                    loop_state = "dice stable"
                     self.vid_display.overlay_info(processed, dice, blobs, loop_state)
-                if picam_available:
-                    self.trap_door.spring_and_reset()
-                    seen_since = 0
+                    self.entropy.entropy_add(last_stable_dice)
+                    num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
+                    num_sixes = len([num for num in last_stable_dice if num == 6])
+                    num_bits_collected = self.entropy.bits_collected()
+                    roll_message = f"{num_hits} hits({self.hitting_on}) on {len(last_stable_dice)} dice, {num_sixes} exploded - {num_bits_collected}" \
+                               f" total bits of entropy collected"
+                    self.new_roll.emit(roll_message)
+                    if picam_available:
+                        self.trap_door.spring_and_reset()
+                        seen_since = 0
+                        last_stable_dice = []
+                        stabilizing_dice = []
             else:
                 loop_state = "watching"
+                last_stable_dice = stabilizing_dice
 
             #self.vid_display.overlay_info(processed, dice, blobs, loop_state)
 
             if self.entropy.entropy_full():
                 hex = self.entropy.to_hex_string()
                 subprocess.run(["ls -l"], capture_output=True)
+                print(f"DANKSHARD BE PRAISED THE KZGENING IS UPON US")
                 command = f"kzgcli offline contribute ceremony-state.json kzgamer-contribution.json --entropy-hex {hex}"
                 subprocess.run([command], capture_output=True)
 

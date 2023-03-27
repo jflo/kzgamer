@@ -45,10 +45,8 @@ class VideoFrameProvider(QObject):
                          int(d[2] + textsize[1] / 2)),
                         cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 10)
 
-        print(f"{message}, {len(dice)} dice on {len(blobs)} blobs")
         messagePosition = (250,250)
         cv2.putText(markup_frame, message, messagePosition, cv2.FONT_HERSHEY_PLAIN, 12, (255,0,0),10)
 
         self.show_frame(markup_frame)
-        cv2.imwrite("frame.png", markup_frame)
 

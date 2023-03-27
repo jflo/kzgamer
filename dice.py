@@ -5,7 +5,7 @@ from sklearn import cluster
 
 params = cv2.SimpleBlobDetector_Params()
 #filter out things too elongated, likely not on top face
-params.minInertiaRatio = 0.6
+params.minInertiaRatio = 0.5
 #params.maxInertiaRatio = 1
 params.filterByInertia = True
 #params.minCircularity = 0.6
@@ -40,7 +40,6 @@ def get_dice_from_blobs(blobs):
             X.append(pos)
 
     X = np.asarray(X)
-    print(X)
 
     if len(X) > 0:
         clustering = cluster.DBSCAN(eps=200, min_samples=1).fit(X)
