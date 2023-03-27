@@ -33,14 +33,14 @@ class MainWindow(QWidget):
         button_layout = QGridLayout()
         button_layout.setSpacing(0)
         button_layout.setContentsMargins(0, 0, 0, 0)
-        button_size = 100
+        button_size = 50
         buton_font = QFont("Helvetica", 24)
 
         for i in range(1, 7):
             button = QPushButton(str(i))
             button.clicked.connect(self.button_click_handler)
-            row = (i - 1) // 3
-            col = (i - 1) % 3
+            row = 0
+            col = (i - 1)
             button.setMinimumSize(button_size, button_size)
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             button_layout.addWidget(button, row, col)
@@ -55,8 +55,7 @@ class MainWindow(QWidget):
 
     @pyqtSlot(QPixmap)
     def update_video_pane(self, pixmap):
-        if sys.argv[-1] == "--debug":
-            self.video_pane.setPixmap(pixmap)
+        self.video_pane.setPixmap(pixmap)
 
     @pyqtSlot(object)
     def log_roll(self, message):

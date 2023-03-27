@@ -83,6 +83,7 @@ class KZGamerThread(QThread):
                 if consistent_frames >= self.settle_frames:
                 # parse dice and append to entropy
                     loop_state = "dice stable"
+                    self.vid_display.overlay_info(processed, dice, blobs, loop_state)
                     self.entropy.entropy_add(last_stable_dice)
                     num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
                     num_sixes = len([num for num in last_stable_dice if num == 6])
