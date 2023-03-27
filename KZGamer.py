@@ -32,17 +32,17 @@ class KZGamerThread(QThread):
         self.running = False
         if picam_available:
             self.camera = Picamera2()
-            #self.camera.start_preview(Preview.NULL)
             self.capture_config = self.camera.create_still_configuration() 
             self.camera.configure(self.capture_config)
-            self.camera.set_controls({"AfMode": controls.AfModeEnum.Continuous,
+            focal_length = 1/.182
+            self.camera.set_controls({"AfMode": controls.AfModeEnum.Manual,
+                                      "LensPosition": focal_length,
                                       "AeConstraintMode": controls.AeConstraintModeEnum.Highlight,
                                       "AeMeteringMode": controls.AeMeteringModeEnum.Spot,
                                       "ExposureValue": -1,
                                       "Contrast": 8 })
             self.camera.start()
             time.sleep(1)
-            #self.camera.set_controls({"Brightness": -0.5})
             # if picam is available, we're on the pi and io is available
             self.trap_door = TrapDoor()
         else:
@@ -67,7 +67,6 @@ class KZGamerThread(QThread):
         while self.running:
             time.sleep(self.frame_capture_delay)
             if picam_available:
-                success = self.camera.autofocus_cycle()
                 frame = self.camera.capture_array()
             else:
                 ret, frame = self.camera.read()
