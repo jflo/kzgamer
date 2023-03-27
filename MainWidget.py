@@ -42,7 +42,7 @@ class MainWindow(QWidget):
             row = 0
             col = (i - 1)
             button.setMinimumSize(button_size, button_size)
-            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
             button_layout.addWidget(button, row, col)
 
         main_layout.addLayout(button_layout)
