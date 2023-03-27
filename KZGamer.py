@@ -38,7 +38,8 @@ class KZGamerThread(QThread):
             self.camera.set_controls({"AfMode": controls.AfModeEnum.Continuous,
                                       "AeConstraintMode": controls.AeConstraintModeEnum.Highlight,
                                       "AeMeteringMode": controls.AeMeteringModeEnum.Spot,
-                                      "ExposureValue": -1})
+                                      "ExposureValue": -1,
+                                      "Contrast": 8 })
             self.camera.start()
             time.sleep(1)
             #self.camera.set_controls({"Brightness": -0.5})
@@ -48,7 +49,6 @@ class KZGamerThread(QThread):
             self.camera = cv2.VideoCapture(0)
 
         self.entropy = Entropy()
-        self.loop_state = "waiting"
         self.settle_frames = 2
         self.hitting_on = 4
         self.vid_display = VideoFrameProvider()
@@ -59,6 +59,7 @@ class KZGamerThread(QThread):
         self.hitting_on = target_number
 
     def run(self):
+        loop_state = "waiting"
         self.running = True
         seen_since = 0
         current_dice = 0
@@ -74,20 +75,25 @@ class KZGamerThread(QThread):
             self.vid_display.show_frame(frame)
             time.sleep(1)
             processed = preprocess(frame)
+            cv2.imwrite("processed.png", processed)
             self.vid_display.show_frame(processed)
             time.sleep(1)
             blobs = get_blobs(processed)
+            print(f"found {len(blobs)} blobs")
             dice = get_dice_from_blobs(blobs)
+            print(f"which seems like {len(dice)} dice")
             simple_dice = simplify_dice(dice)
-
+            self.vid_display.overlay_info(processed, dice, blobs, loop_state)
+            
             # are these the same dice from the last N frames?
             if current_dice == simple_dice and len(simple_dice) > 0:
                 seen_since += 1
                 loop_state = "dice stabilizing"
-                #self.vid_display.overlay_info(processed, dice, blobs, loop_state)
+                self.vid_display.overlay_info(processed, dice, blobs, loop_state)
             if seen_since > self.settle_frames:
                 # parse dice and append to entropy
                 loop_state = "dice stable"
+                self.vid_display.overlay_info(processed, dice, blobs, loop_state)
                 self.entropy.entropy_add(simple_dice)
                 current_dice = simple_dice
                 num_hits = len([num for num in current_dice if num >= self.hitting_on])

@@ -4,17 +4,21 @@ import sklearn
 from sklearn import cluster
 
 params = cv2.SimpleBlobDetector_Params()
-params.filterByInertia
 #filter out things too elongated, likely not on top face
-params.minInertiaRatio = 0.75
-params.maxInertiaRatio = 1
-params.minCircularity = 0.5
-params.minCircularity = 0.6
-params.maxCircularity = 1
-params.blobColor = 0
-params.minThreshold = 50
-params.maxThreshold = 150
-
+params.minInertiaRatio = 0.6
+#params.maxInertiaRatio = 1
+params.filterByInertia = True
+#params.minCircularity = 0.6
+#params.maxCircularity = 1
+#params.filterByCircularity = True
+#params.blobColor = 0
+#params.filterByColor = True
+#params.minThreshold = 240
+#params.maxThreshold = 255
+#params.minDistBetweenBlobs = 20
+#params.minArea = 45
+#params.maxArea = 50
+#params.filterByArea = True
 
 detector = cv2.SimpleBlobDetector_create(params)
 
@@ -36,9 +40,10 @@ def get_dice_from_blobs(blobs):
             X.append(pos)
 
     X = np.asarray(X)
+    print(X)
 
     if len(X) > 0:
-        clustering = cluster.DBSCAN(eps=50, min_samples=1).fit(X)
+        clustering = cluster.DBSCAN(eps=200, min_samples=1).fit(X)
         #clustering = cluster.OPTICS(eps=40, max_eps=50, min_samples=1).fit(X)
 
         # Find the largest label assigned + 1, that's the number of dice found

@@ -20,7 +20,7 @@ class VideoFrameProvider(QObject):
 
         h, w, c = output_frame.shape
         qimg = QImage(output_frame.data, w, h, w*c, QImage.Format_RGB888)
-        scaled = qimg.scaledToWidth(450)
+        scaled = qimg.scaledToWidth(900)
         pixmap = QPixmap.fromImage(scaled)
         self.new_frame.emit(pixmap)
 
@@ -32,21 +32,22 @@ class VideoFrameProvider(QObject):
             r = b.size / 2
 
             cv2.circle(markup_frame, (int(pos[0]), int(pos[1])),
-                       int(r), (255, 0, 0), 2)
+                       int(r), (255, 0, 0), 10)
 
         # Overlay dice number
         for d in dice:
             # Get textsize for text centering
             textsize = cv2.getTextSize(
-                str(d[0]), cv2.FONT_HERSHEY_PLAIN, 3, 2)[0]
+                str(d[0]), cv2.FONT_HERSHEY_PLAIN, 12, 2)[0]
 
             cv2.putText(markup_frame, str(d[0]),
                         (int(d[1] - textsize[0] / 2),
                          int(d[2] + textsize[1] / 2)),
-                        cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 2)
+                        cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 10)
 
-        messagePosition = (10,50)
-        cv2.putText(markup_frame, message, messagePosition, cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0),2)
+        print(f"{message}, {len(dice)} dice on {len(blobs)} blobs")
+        messagePosition = (250,250)
+        cv2.putText(markup_frame, message, messagePosition, cv2.FONT_HERSHEY_PLAIN, 12, (255,0,0),10)
 
         self.show_frame(markup_frame)
         cv2.imwrite("frame.png", markup_frame)
