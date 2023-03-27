@@ -55,7 +55,8 @@ class MainWindow(QWidget):
 
     @pyqtSlot(QPixmap)
     def update_video_pane(self, pixmap):
-        self.video_pane.setPixmap(pixmap)
+        if sys.argv[-1] == "--debug":
+            self.video_pane.setPixmap(pixmap)
 
     @pyqtSlot(object)
     def log_roll(self, message):

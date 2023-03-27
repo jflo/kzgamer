@@ -71,29 +71,18 @@ class KZGamerThread(QThread):
             else:
                 ret, frame = self.camera.read()
             # check for dice
-            #self.vid_display.show_frame(frame)
-            #time.sleep(1)
             processed = preprocess(frame)
-            #self.vid_display.show_frame(processed)
-            #time.sleep(1)
             blobs = get_blobs(processed)
             dice = get_dice_from_blobs(blobs)
             
             stabilizing_dice = simplify_dice(dice)
-            #self.vid_display.overlay_info(processed, dice, blobs, loop_state)
-            if len(blobs) > 0 :
-                print(f"found {len(blobs)} blobs which seems like {len(dice)} dice")
-                print(stabilizing_dice)
-                print(last_stable_dice)
             # are these the same dice from the last N frames?
             if stabilizing_dice == last_stable_dice and len(stabilizing_dice) > 0:
                 consistent_frames += 1
                 loop_state = "dice stabilizing"
-                self.vid_display.overlay_info(processed, dice, blobs, loop_state)
                 if consistent_frames >= self.settle_frames:
                 # parse dice and append to entropy
                     loop_state = "dice stable"
-                    self.vid_display.overlay_info(processed, dice, blobs, loop_state)
                     self.entropy.entropy_add(last_stable_dice)
                     num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
                     num_sixes = len([num for num in last_stable_dice if num == 6])
@@ -110,12 +99,12 @@ class KZGamerThread(QThread):
                 loop_state = "watching"
                 last_stable_dice = stabilizing_dice
 
-            #self.vid_display.overlay_info(processed, dice, blobs, loop_state)
 
             if self.entropy.entropy_full():
                 hex = self.entropy.to_hex_string()
                 subprocess.run(["ls -l"], capture_output=True)
-                print(f"DANKSHARD BE PRAISED THE KZGENING IS UPON US")
+                victory_message = "DANKSHARD BE PRAISED THE KZGENING IS UPON US"
+                self.new_roll.emit(victory_message)
                 command = f"kzgcli offline contribute ceremony-state.json kzgamer-contribution.json --entropy-hex {hex}"
                 subprocess.run([command], capture_output=True)
 
