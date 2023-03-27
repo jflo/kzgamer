@@ -6,9 +6,11 @@ from PyQt5.QtGui import QPixmap, QImage
 
 class VideoFrameProvider(QObject):
     new_frame = pyqtSignal(QPixmap)
-
+    
     def __init__(self):
         super().__init__()
+        self.line_thickness = 5
+        self.messagePosition = (125,125)
 
     def show_frame(self, frame):
         if len(frame.shape) == 3:
@@ -32,7 +34,7 @@ class VideoFrameProvider(QObject):
             r = b.size / 2
 
             cv2.circle(markup_frame, (int(pos[0]), int(pos[1])),
-                       int(r), (255, 0, 0), 10)
+                       int(r), (255, 0, 0), self.line_thickness)
 
         # Overlay dice number
         for d in dice:
@@ -43,10 +45,10 @@ class VideoFrameProvider(QObject):
             cv2.putText(markup_frame, str(d[0]),
                         (int(d[1] - textsize[0] / 2),
                          int(d[2] + textsize[1] / 2)),
-                        cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 10)
+                        cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), self.line_thickness)
 
-        messagePosition = (250,250)
-        cv2.putText(markup_frame, message, messagePosition, cv2.FONT_HERSHEY_PLAIN, 12, (255,0,0),10)
+        
+        cv2.putText(markup_frame, message, self.messagePosition, cv2.FONT_HERSHEY_PLAIN, 12, (255,0,0),self.line_thickness)
 
         self.show_frame(markup_frame)
 

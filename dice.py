@@ -42,7 +42,7 @@ def get_dice_from_blobs(blobs):
     X = np.asarray(X)
 
     if len(X) > 0:
-        clustering = cluster.DBSCAN(eps=200, min_samples=1).fit(X)
+        clustering = cluster.DBSCAN(eps=75, min_samples=1).fit(X)
         #clustering = cluster.OPTICS(eps=40, max_eps=50, min_samples=1).fit(X)
 
         # Find the largest label assigned + 1, that's the number of dice found

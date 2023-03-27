@@ -32,14 +32,14 @@ class KZGamerThread(QThread):
         self.running = False
         if picam_available:
             self.camera = Picamera2()
-            self.capture_config = self.camera.create_still_configuration() 
+            self.capture_config = self.camera.create_still_configuration(main={"size": (1920,1080)})
             self.camera.configure(self.capture_config)
-            focal_length = 1/.182
+            focal_length = 1/.2
             self.camera.set_controls({"AfMode": controls.AfModeEnum.Manual,
                                       "LensPosition": focal_length,
-                                      "AeConstraintMode": controls.AeConstraintModeEnum.Highlight,
-                                      "AeMeteringMode": controls.AeMeteringModeEnum.Spot,
-                                      "ExposureValue": -1,
+                                      "AeEnable": False,
+                                      "ExposureTime": int((1000000)*1/15),
+                                      "ExposureValue": -2,
                                       "Contrast": 8 })
             self.camera.start()
             time.sleep(1)
