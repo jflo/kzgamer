@@ -128,6 +128,10 @@ class KZGamerThread(QThread):
                 for line in contrib_result.stdout:
                     self.log.emit(line.strip())
                 contrib_result.wait()
+                if os.path.isfile("entropy.hex"):
+                    os.remove("entropy.hex")
+                self.new_roll.emit("retreive contribution and submit to sequencer")
+                self.stop()
 
     def status_check(self):
         git_command = ["git", "log", "--pretty=format:'%h %ad %s'", "-1"]
