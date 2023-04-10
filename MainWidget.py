@@ -25,11 +25,14 @@ class MainWindow(QWidget):
         self.log_pane.setReadOnly(True)
         main_layout.addWidget(self.log_pane)
 
-        # New output pane
-        self.output_pane = QTextEdit()
-        self.output_pane.setReadOnly(True)
-        self.output_pane.setFont(QFont("Helvetica", 16, weight=QFont.Bold))
-        main_layout.addWidget(self.output_pane)
+        # output of the last roll
+        self.last_roll_display = QLabel()
+        self.last_roll_display.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        self.last_roll_display.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.last_roll_display.setMaximumHeight(14) # Set the maximum height to 14 pixels
+        self.last_roll_display.setStyleSheet("font-size: 14px") # Set the font size to 14
+
+        main_layout.addWidget(self.last_roll_display)
 
         # Slider for input control
         self.mode_slider = QSlider(QtCore.Qt.Horizontal)
@@ -41,15 +44,16 @@ class MainWindow(QWidget):
         # Labels for slider
         slider_labels_layout = QHBoxLayout()
         self.hit_label = QLabel("Hit/Damage")
-        self.hit_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.hit_label.setAlignment(QtCore.Qt.AlignRight)
         self.morale_label = QLabel("Morale")
-        self.morale_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.morale_label.setAlignment(QtCore.Qt.AlignLeft)
 
         slider_labels_layout.addWidget(self.hit_label)
         slider_labels_layout.addWidget(self.mode_slider)
         slider_labels_layout.addWidget(self.morale_label)
 
         main_layout.addLayout(slider_labels_layout)
+
         button_layout = QGridLayout()
         button_layout.setSpacing(0)
         button_layout.setContentsMargins(0, 0, 0, 0)
@@ -68,7 +72,7 @@ class MainWindow(QWidget):
         button_grid.setLayout(button_layout)
         self.mode_slider.setFixedWidth(int(button_grid.width()/3))
         self.mode_slider.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        main_layout.addLayout(button_layout)
+        main_layout.addLayout(button_grid)
         self.setLayout(main_layout)
 
         self.mode_slider.sliderReleased.connect(self.slider_released_handler)
@@ -80,8 +84,8 @@ class MainWindow(QWidget):
 
     @pyqtSlot(object)
     def log_roll(self, message):
-        self.output_pane.clear()
-        self.output_pane.append(message)
+        self.last_roll_display.clear()
+        self.last_roll_display.append(message)
         self.log_pane.append(f"[{QtCore.QTime.currentTime().toString('hh:mm:ss')}] {message}")
 
     def slider_released_handler(self):
