@@ -47,7 +47,8 @@ class KZGamerThread(QThread):
         else:
             self.camera = cv2.VideoCapture(0)
 
-        self.entropy = Entropy(128)
+        self.entropy_goal = 128
+        self.entropy = Entropy(self.entropy_goal)
         self.settle_frames = 2
         self.hitting_on = 4
         self.mode = "Morale"
@@ -123,12 +124,12 @@ class KZGamerThread(QThread):
                 subprocess.run(["ls", "-l"], capture_output=True)
                 victory_message = "DANKSHARD BE PRAISED THE KZGENING IS UPON US"
                 self.new_roll.emit(victory_message)
-                command = f"kzgcli offline contribute /media/jflo/KOBRA/ceremony-state.json /media/jflo/KOBRA/kzgamer-contribution.json --entropy-hex {hex}"
+                command = ["kzgcli", "offline", "contribute", "/media/jflo/KOBRA/ceremony-state.json", "/media/jflo/KOBRA/kzgamer-contribution.json", f"--entropy-hex {hex}"]
                 subprocess.run([command], capture_output=True)
                 os.remove("entropy.hex")
 
     def status_check(self):
-        git_command = ["git", "log --pretty=format:'%h %ad %s' -1"]
+        git_command = ["git", "log", "--pretty=format:'%h %ad %s'", "-1"]
         git_log = subprocess.run(git_command, capture_output=True)
         self.log.emit(git_log.stdout)
         self.log.emit(git_log.stderr)
@@ -136,6 +137,7 @@ class KZGamerThread(QThread):
         state_check_result = subprocess.run(state_check_command, capture_output=True)
         self.log.emit(state_check_result.stdout)
         self.log.emit(state_check_result.stderr)
+        self.log.emit(f"attempting to collect {self.entropy_goal} bits of entropy")
 
     def stop(self):
         self.running = False
