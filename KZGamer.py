@@ -125,18 +125,21 @@ class KZGamerThread(QThread):
                 victory_message = "DANKSHARD BE PRAISED THE KZGENING IS UPON US"
                 self.new_roll.emit(victory_message)
                 command = ["kzgcli", "offline", "contribute", "/media/jflo/KOBRA/ceremony-state.json", "/media/jflo/KOBRA/kzgamer-contribution.json", f"--entropy-hex {hex}"]
-                subprocess.run([command], capture_output=True)
-                os.remove("entropy.hex")
+                contrib_result = subprocess.run([command], capture_output=True)
+                self.log.emit(contrib_result.stdout.decode())
+                self.log.emit(contrib_result.stderr.decode())
+                print(contrib_result.stdout.decode())
+                print(contrib_result.stderr.decode())
 
     def status_check(self):
         git_command = ["git", "log", "--pretty=format:'%h %ad %s'", "-1"]
         git_log = subprocess.run(git_command, capture_output=True)
-        self.log.emit(git_log.stdout)
-        self.log.emit(git_log.stderr)
+        self.log.emit(git_log.stdout.decode())
+        self.log.emit(git_log.stderr.decode())
         state_check_command = ["ls", "-lh", "/media/jflo/KOBRA/ceremony-state.json"]
         state_check_result = subprocess.run(state_check_command, capture_output=True)
-        self.log.emit(state_check_result.stdout)
-        self.log.emit(state_check_result.stderr)
+        self.log.emit(state_check_result.stdout.decode())
+        self.log.emit(state_check_result.stderr.decode())
         self.log.emit(f"attempting to collect {self.entropy_goal} bits of entropy")
 
     def stop(self):
