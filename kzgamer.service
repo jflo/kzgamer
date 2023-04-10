@@ -1,0 +1,16 @@
+[Unit]
+Description=KZGamer
+
+[Service]
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+ExecStart=/usr/bin/python /home/jflo/kzgamer/MainWidget.py
+WorkingDirectory=/home/jflo/kzgamer
+Restart=always
+RestartSec=10s
+KillMode=process
+TimeoutSec=infinity
+User=jflo
+
+[Install]
+WantedBy=graphical.target

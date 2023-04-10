@@ -86,7 +86,6 @@ class KZGamerThread(QThread):
                 if consistent_frames >= self.settle_frames:
                 # parse dice and append to entropy
                     loop_state = "dice stable"
-                    self.vid_display.overlay_info(processed, dice, blobs, loop_state)
                     self.entropy.entropy_add(last_stable_dice)
                     num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
                     num_sixes = len([num for num in last_stable_dice if num == 6])
@@ -94,7 +93,11 @@ class KZGamerThread(QThread):
                         roll_result = f"{num_hits} hits({self.hitting_on}) on {len(last_stable_dice)} dice, {num_sixes} exploded"
                     elif self.mode == "Morale":
                         total_value = sum(last_stable_dice)
-                        if total_value <= self.hitting_on:
+                        if total_value == 11:
+                            roll_result = "Morale check failed"
+                        elif total_value == 12:
+                            roll_result = "FUBAR, roll D6 chart pg. 41"
+                        elif total_value <= self.hitting_on:
                             roll_result = "Morale check succeeded"
                         else:
                             roll_result = "Morale check failed"

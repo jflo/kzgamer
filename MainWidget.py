@@ -38,15 +38,13 @@ class MainWindow(QWidget):
         main_layout.addWidget(self.last_roll_display)
 
          # Add the radio buttons for the mode input
-        mode_label = QLabel("Mode:")
-        mode_label.setFont(QFont("Helvetica", 14))
+
         self.hit_damage_radio = QRadioButton("Hit/Damage")
         self.morale_radio = QRadioButton("Morale")
         self.hit_damage_radio.toggled.connect(self.hit_damage_mode)
         self.morale_radio.toggled.connect(self.morale_mode)
 
         mode_layout = QHBoxLayout()
-        mode_layout.addWidget(mode_label)
         mode_layout.addWidget(self.hit_damage_radio)
         mode_layout.addWidget(self.morale_radio)
 
@@ -57,7 +55,7 @@ class MainWindow(QWidget):
         self.button_layout.setContentsMargins(0, 0, 0, 0)
         button_size = 50
 
-        for i in range(0, 12):
+        for i in range(0, 10):
             button = QPushButton(str(i+1))
             button.setObjectName(str(i+1))
             button.clicked.connect(self.button_click_handler)
@@ -87,7 +85,7 @@ class MainWindow(QWidget):
     def hit_damage_mode(self, checked):
         if checked:
             self.log_pane.append("Setting Hit/Damage mode")
-            for i in range(1, 13):
+            for i in range(1, 11):
                 button = self.button_grid.findChild(QPushButton, str(i))
                 if i <= 6:
                     button.setEnabled(True)
@@ -98,7 +96,7 @@ class MainWindow(QWidget):
     def morale_mode(self, checked):
         if checked:
             self.log_pane.append("Setting Morale mode")
-            for i in range(1, 13):
+            for i in range(1, 11):
                 button = self.button_grid.findChild(QPushButton, str(i))
                 button.setEnabled(True)
             self.kzgamer_thread.mode_selected("Morale")
