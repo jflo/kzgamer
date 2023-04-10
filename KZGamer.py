@@ -47,7 +47,7 @@ class KZGamerThread(QThread):
         else:
             self.camera = cv2.VideoCapture(0)
 
-        self.entropy_goal = 128
+        self.entropy_goal = 1024
         self.entropy = Entropy(self.entropy_goal)
         self.settle_frames = 2
         self.hitting_on = 4
@@ -100,7 +100,7 @@ class KZGamerThread(QThread):
                     num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
                     num_sixes = len([num for num in last_stable_dice if num == 6])
                     if self.mode == "Hit/Damage":
-                        roll_result = [f"{num_hits} hits({self.hitting_on}) on {len(last_stable_dice)} dice, {num_sixes} exploded",
+                        roll_result = [f"{num_hits} hits({self.hitting_on}) on {len(last_stable_dice)} dice, {num_sixes} sixes",
                                        self.GREEN_GOOD if num_hits > 0 else self.RED_BAD ]
                     elif self.mode == "Morale":
                         total_value = sum(last_stable_dice)
