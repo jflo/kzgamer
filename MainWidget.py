@@ -33,15 +33,18 @@ class MainWindow(QWidget):
         self.last_roll_display = QLabel()
         self.last_roll_display.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
         self.last_roll_display.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.last_roll_display.setMaximumHeight(14) # Set the maximum height to 14 pixels
-        self.last_roll_display.setStyleSheet("font-size: 14px") # Set the font size to 14
+        self.last_roll_display.setMaximumHeight(32) # Set the maximum height to 14 pixels
+        self.last_roll_display.setStyleSheet("font-size: 28px") # Set the font size to 14
 
         main_layout.addWidget(self.last_roll_display)
 
          # Add the radio buttons for the mode input
 
+        radio_button_size = "25px"
         self.hit_damage_radio = QRadioButton("Hit/Damage")
+        self.hit_damage_radio.setStyleSheet(f"QRadioButton::indicator {{ width: {radio_button_size}; height: {radio_button_size}; }}")
         self.morale_radio = QRadioButton("Morale")
+        self.morale_radio.setStyleSheet(f"QRadioButton::indicator {{ width: {radio_button_size}; height: {radio_button_size}; }}")
         self.hit_damage_radio.toggled.connect(self.hit_damage_mode)
         self.morale_radio.toggled.connect(self.morale_mode)
 
@@ -79,8 +82,18 @@ class MainWindow(QWidget):
 
     @pyqtSlot(object)
     def log_roll(self, message):
+
+        log_message = "NOOP"
+        if isinstance(message, list):
+            color_to_log = message[1]
+            log_message = message[0]
+        else:
+            log_message = message
+            color_to_log = "#000000"
+
         self.last_roll_display.clear()
-        self.last_roll_display.setText(message)
+        self.last_roll_display.setStyleSheet(f"color: {color_to_log}; font-size: 28px")
+        self.last_roll_display.setText(log_message)
         self.log_message(message)
 
     def log_message(self, message):

@@ -53,6 +53,14 @@ class KZGamerThread(QThread):
         self.hitting_on = 4
         self.mode = "Morale"
         self.frame_capture_delay = 0.1
+        #"#00ff00"
+        #"#2ecc71"
+        #"#27ae60"
+        self.GREEN_GOOD = "#2ecc71"
+        #"#ff0000"
+        #"#c0392b"
+        #"#e74c3c"
+        self.RED_BAD = "#c0392b"
 
     @pyqtSlot(object)
     def target_selected(self, target_number):
@@ -92,17 +100,18 @@ class KZGamerThread(QThread):
                     num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
                     num_sixes = len([num for num in last_stable_dice if num == 6])
                     if self.mode == "Hit/Damage":
-                        roll_result = f"{num_hits} hits({self.hitting_on}) on {len(last_stable_dice)} dice, {num_sixes} exploded"
+                        roll_result = [f"{num_hits} hits({self.hitting_on}) on {len(last_stable_dice)} dice, {num_sixes} exploded",
+                                       self.GREEN_GOOD if num_hits > 0 else self.RED_BAD ]
                     elif self.mode == "Morale":
                         total_value = sum(last_stable_dice)
                         if total_value == 11:
-                            roll_result = "Morale check failed"
+                            roll_result = ["Morale check failed", self.RED_BAD]
                         elif total_value == 12:
-                            roll_result = "FUBAR, roll D6 chart pg. 41"
+                            roll_result = ["FUBAR, roll D6 chart pg. 41", self.RED_BAD]
                         elif total_value <= self.hitting_on:
-                            roll_result = "Morale check succeeded"
+                            roll_result = ["Morale check succeeded", self.GREEN_GOOD]
                         else:
-                            roll_result = "Morale check failed"
+                            roll_result = ["Morale check failed", self.RED_BAD]
                     num_bits_collected = self.entropy.bits_collected()
                     bits_message = f"{num_bits_collected}" \
                                    f" total bits of entropy collected"
