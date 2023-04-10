@@ -8,6 +8,7 @@ class Entropy:
         self.running_entropy = bitarray()
         self.stop_at = collection_goal
         if os.path.isfile("entropy.hex"):
+            print("progress found")
             with open("entropy.hex", "r") as f:
                 hex_string = f.read().strip()
             self.running_entropy.frombytes(bytes.fromhex(hex_string))
