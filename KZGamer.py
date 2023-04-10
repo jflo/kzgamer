@@ -124,8 +124,9 @@ class KZGamerThread(QThread):
                 subprocess.run(["ls", "-l"], capture_output=True)
                 victory_message = "DANKSHARD BE PRAISED THE KZGENING IS UPON US"
                 self.new_roll.emit(victory_message)
-                command = ["/usr/local/bin/kzgcli", "offline", "contribute", "/media/jflo/KOBRA/ceremony-state.json", "/media/jflo/KOBRA/kzgamer-contribution.json", f"--entropy-hex {hex}"]
-                contrib_result = subprocess.run(command, capture_output=True)
+                command = ["/usr/local/bin/kzgcli", "offline", "contribute", f"--hex-entropy {hex}", "/media/jflo/KOBRA/ceremony-state.json", "/media/jflo/KOBRA/kzgamer-contribution.json"]
+                contrib_result = subprocess.run([command], capture_output=True)
+                #REMOVE ME!!!
                 self.log.emit(contrib_result.stdout.decode())
                 self.log.emit(contrib_result.stderr.decode())
                 print(contrib_result.stdout.decode())
