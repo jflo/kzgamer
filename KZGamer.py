@@ -62,6 +62,7 @@ class KZGamerThread(QThread):
         self.mode = mode_name
 
     def run(self):
+        self.status_check()
         self.running = True
         consistent_frames = 1
         stabilizing_dice = []
@@ -125,6 +126,16 @@ class KZGamerThread(QThread):
                 command = f"kzgcli offline contribute /media/jflo/KOBRA/ceremony-state.json /media/jflo/KOBRA/kzgamer-contribution.json --entropy-hex {hex}"
                 subprocess.run([command], capture_output=True)
                 os.remove("entropy.hex")
+
+    def status_check(self):
+        git_command = "git log --pretty=format:'%h %ad %s' -1"
+        git_log = subprocess.run([git_command], capture_output=True)
+        self.log.emit(git_log.stdout)
+        self.log.emit(git_log.stderr)
+        state_check_command = "ls -lh /media/jflo/KOBRA/ceremony-state.json"
+        state_check_result = subprocess.run([state_check_command], capture_output=True)
+        self.log.emit(state_check_result.stdout)
+        self.log.emit(state_check_result.stderr)
 
     def stop(self):
         self.running = False
