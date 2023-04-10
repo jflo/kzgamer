@@ -64,7 +64,9 @@ class MainWindow(QWidget):
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
             button_layout.addWidget(button, row, col)
 
-        self.mode_slider.setFixedWidth(int(button_layout.width()/3))
+        button_grid = QWidget()
+        button_grid.setLayout(button_layout)
+        self.mode_slider.setFixedWidth(int(button_grid.width()/3))
         self.mode_slider.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         main_layout.addLayout(button_layout)
         self.setLayout(main_layout)
