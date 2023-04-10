@@ -59,6 +59,7 @@ class MainWindow(QWidget):
 
         for i in range(0, 12):
             button = QPushButton(str(i+1))
+            button.setObjectName(str(i+1))
             button.clicked.connect(self.button_click_handler)
             row = int(i/6)
             col = (i+6)%6
@@ -87,7 +88,7 @@ class MainWindow(QWidget):
         if checked:
             self.log_pane.append("Setting Hit/Damage mode")
             for i in range(1, 13):
-                button = self.button_layout.findChild(QPushButton, str(i))
+                button = self.button_grid.findChild(QPushButton, str(i))
                 if i <= 6:
                     button.setEnabled(True)
                 else:
@@ -98,7 +99,7 @@ class MainWindow(QWidget):
         if checked:
             self.log_pane.append("Setting Morale mode")
             for i in range(1, 13):
-                button = self.button_layout.findChild(QPushButton, str(i))
+                button = self.button_grid.findChild(QPushButton, str(i))
                 button.setEnabled(True)
             self.kzgamer_thread.mode_selected("Morale")
 
