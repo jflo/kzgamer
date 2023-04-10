@@ -25,7 +25,7 @@ import subprocess
 class KZGamerThread(QThread):
     ui_update = pyqtSignal(object)
     new_roll = pyqtSignal(object)
-
+    log = pyqtSignal(object)
     def __init__(self, parent=None):
         super().__init__(parent)
         self.running = False
@@ -62,7 +62,6 @@ class KZGamerThread(QThread):
         self.mode = mode_name
 
     def run(self):
-        loop_state = "waiting"
         self.running = True
         consistent_frames = 1
         stabilizing_dice = []
@@ -82,10 +81,11 @@ class KZGamerThread(QThread):
             # are these the same dice from the last N frames?
             if stabilizing_dice == last_stable_dice and len(stabilizing_dice) > 0:
                 consistent_frames += 1
-                loop_state = "dice stabilizing"
                 if consistent_frames >= self.settle_frames:
                 # parse dice and append to entropy
-                    loop_state = "dice stable"
+                    for num in last_stable_dice:
+                        if num > 6:
+                            self.log.emit("error detected, dice ignored, reroll")
                     self.entropy.entropy_add(last_stable_dice)
                     num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
                     num_sixes = len([num for num in last_stable_dice if num == 6])
@@ -102,9 +102,11 @@ class KZGamerThread(QThread):
                         else:
                             roll_result = "Morale check failed"
                     num_bits_collected = self.entropy.bits_collected()
-                    roll_message = f"{roll_result} - {num_bits_collected}" \
+                    bits_message = f"{num_bits_collected}" \
                                    f" total bits of entropy collected"
-                    self.new_roll.emit(roll_message)
+                    self.log.emit(bits_message)
+                    self.new_roll.emit(roll_result)
+
                     if picam_available:
                         self.trap_door.spring_and_reset()
                         seen_since = 0
@@ -122,6 +124,7 @@ class KZGamerThread(QThread):
                 self.new_roll.emit(victory_message)
                 command = f"kzgcli offline contribute /media/jflo/KOBRA/ceremony-state.json /media/jflo/KOBRA/kzgamer-contribution.json --entropy-hex {hex}"
                 subprocess.run([command], capture_output=True)
+                os.remove("entropy.hex")
 
     def stop(self):
         self.running = False

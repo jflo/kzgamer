@@ -12,6 +12,7 @@ class MainWindow(QWidget):
         super().__init__()
         self.kzgamer_thread = KZGamerThread(self)
         self.kzgamer_thread.new_roll.connect(self.log_roll)
+        self.kzgamer_thread.log.connect(self.log_message)
         self.button_grid = QWidget()
         self.button_layout = QGridLayout()
         self.init_ui()
@@ -80,6 +81,9 @@ class MainWindow(QWidget):
     def log_roll(self, message):
         self.last_roll_display.clear()
         self.last_roll_display.setText(message)
+        self.log_message(message)
+
+    def log_message(self, message):
         self.log_pane.append(f"[{QtCore.QTime.currentTime().toString('hh:mm:ss')}] {message}")
 
     def hit_damage_mode(self, checked):
