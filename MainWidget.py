@@ -32,11 +32,11 @@ class MainWindow(QWidget):
         main_layout.addWidget(self.output_pane)
 
         # Slider for input control
-        self.input_slider = QSlider(QtCore.Qt.Horizontal)
-        self.input_slider.setMinimum(0)
-        self.input_slider.setMaximum(1)
-        self.input_slider.setTickInterval(1)
-        self.input_slider.setValue(1)
+        self.mode_slider = QSlider(QtCore.Qt.Horizontal)
+        self.mode_slider.setMinimum(0)
+        self.mode_slider.setMaximum(1)
+        self.mode_slider.setTickInterval(1)
+        self.mode_slider.setValue(1)
 
         # Labels for slider
         slider_labels_layout = QHBoxLayout()
@@ -46,7 +46,7 @@ class MainWindow(QWidget):
         self.morale_label.setAlignment(QtCore.Qt.AlignCenter)
 
         slider_labels_layout.addWidget(self.hit_label)
-        slider_labels_layout.addWidget(self.input_slider)
+        slider_labels_layout.addWidget(self.mode_slider)
         slider_labels_layout.addWidget(self.morale_label)
 
         main_layout.addLayout(slider_labels_layout)
@@ -64,10 +64,12 @@ class MainWindow(QWidget):
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
             button_layout.addWidget(button, row, col)
 
+        self.mode_slider.setFixedWidth(int(button_layout.width()/3))
+        self.mode_slider.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         main_layout.addLayout(button_layout)
         self.setLayout(main_layout)
 
-        self.input_slider.sliderReleased.connect(self.slider_released_handler)
+        self.mode_slider.sliderReleased.connect(self.slider_released_handler)
 
     def button_click_handler(self):
         sender = self.sender()
@@ -81,7 +83,7 @@ class MainWindow(QWidget):
         self.log_pane.append(f"[{QtCore.QTime.currentTime().toString('hh:mm:ss')}] {message}")
 
     def slider_released_handler(self):
-        if self.input_slider.value() == 0:
+        if self.mode_slider.value() == 0:
             self.hit_label.setStyleSheet("font-weight: bold")
             self.morale_label.setStyleSheet("")
             self.log_pane.append("Setting Hit/Damage mode")
