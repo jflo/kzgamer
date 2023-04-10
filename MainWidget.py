@@ -12,8 +12,11 @@ class MainWindow(QWidget):
         super().__init__()
         self.kzgamer_thread = KZGamerThread(self)
         self.kzgamer_thread.new_roll.connect(self.log_roll)
+        self.button_grid = QWidget()
+        self.button_layout = QGridLayout()
         self.init_ui()
         self.kzgamer_thread.start()
+        
 
     def init_ui(self):
         self.setWindowTitle("KZGamer")
@@ -49,9 +52,9 @@ class MainWindow(QWidget):
 
         main_layout.addLayout(mode_layout)
 
-        button_layout = QGridLayout()
-        button_layout.setSpacing(0)
-        button_layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.button_layout.setSpacing(0)
+        self.button_layout.setContentsMargins(0, 0, 0, 0)
         button_size = 50
 
         for i in range(0, 12):
@@ -61,12 +64,12 @@ class MainWindow(QWidget):
             col = (i+6)%6
             button.setMinimumSize(button_size, button_size)
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-            button_layout.addWidget(button, row, col)
+            self.button_layout.addWidget(button, row, col)
 
-        button_grid = QWidget()
-        button_grid.setLayout(button_layout)
+        
+        self.button_grid.setLayout(self.button_layout)
         self.morale_radio.setChecked(True) # Set Hit/Damage mode as the default
-        main_layout.addWidget(button_grid)
+        main_layout.addWidget(self.button_grid)
         self.setLayout(main_layout)
 
     def button_click_handler(self):
@@ -84,7 +87,7 @@ class MainWindow(QWidget):
         if checked:
             self.log_pane.append("Setting Hit/Damage mode")
             for i in range(1, 13):
-                button = self.findChild(QPushButton, str(i))
+                button = self.button_layout.findChild(QPushButton, str(i))
                 if i <= 6:
                     button.setEnabled(True)
                 else:
@@ -95,7 +98,7 @@ class MainWindow(QWidget):
         if checked:
             self.log_pane.append("Setting Morale mode")
             for i in range(1, 13):
-                button = self.findChild(QPushButton, str(i))
+                button = self.button_layout.findChild(QPushButton, str(i))
                 button.setEnabled(True)
             self.kzgamer_thread.mode_selected("Morale")
 
