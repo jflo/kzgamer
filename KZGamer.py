@@ -121,16 +121,13 @@ class KZGamerThread(QThread):
 
             if self.entropy.entropy_full():
                 hex = self.entropy.to_hex_string()
-                subprocess.run(["ls", "-l"], capture_output=True)
-                victory_message = "DANKSHARD BE PRAISED THE KZGENING IS UPON US"
-                self.new_roll.emit(victory_message)
-                command = ["/usr/local/bin/kzgcli", "offline", "contribute", f"--hex-entropy {hex}", "/media/jflo/KOBRA/ceremony-state.json", "/media/jflo/KOBRA/kzgamer-contribution.json"]
-                contrib_result = subprocess.run(command, capture_output=True)
-                #REMOVE ME!!!
-                self.log.emit(contrib_result.stdout.decode())
-                self.log.emit(contrib_result.stderr.decode())
-                print(contrib_result.stdout.decode())
-                print(contrib_result.stderr.decode())
+                self.new_roll.emit("DANKSHARD BE PRAISED THE KZGENING IS UPON US")
+                self.new_roll.emit("CEASE HOSTILITIES")
+                command = ["/usr/local/bin/kzgcli", "offline", "contribute", "--hex-entropy", f"{hex}", "/media/jflo/KOBRA/ceremony-state.json", "/media/jflo/KOBRA/kzgamer-contribution.json"]
+                contrib_result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                for line in contrib_result.stdout:
+                    self.log.emit(line.strip())
+                contrib_result.wait()
 
     def status_check(self):
         git_command = ["git", "log", "--pretty=format:'%h %ad %s'", "-1"]
