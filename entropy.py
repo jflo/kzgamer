@@ -22,9 +22,9 @@ class Entropy:
             self.running_entropy.append(bit2)
             self.running_entropy.append(bit1)
             self.running_entropy.append(bit3)
-        if len(self.running_entropy) % 4 == 0:
-            with open("entropy.hex", "w") as f:
-                f.write(self.to_hex_string())
+
+        with open("entropy.hex", "w") as f:
+            f.write(self.to_hex_string())
 
 
     def entropy_full(self):
@@ -36,9 +36,3 @@ class Entropy:
     def bits_collected(self):
         return len(self.running_entropy)
 
-    def truncate_to_multiple_of_4(self, bitarray):
-        num_bits = len(bitarray)
-        num_bits_to_remove = num_bits % 4
-        if num_bits_to_remove != 0:
-            bitarray = bitarray[:-num_bits_to_remove]
-        return bitarray
