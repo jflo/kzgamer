@@ -125,7 +125,7 @@ class KZGamerThread(QThread):
                 victory_message = "DANKSHARD BE PRAISED THE KZGENING IS UPON US"
                 self.new_roll.emit(victory_message)
                 command = ["kzgcli", "offline", "contribute", "/media/jflo/KOBRA/ceremony-state.json", "/media/jflo/KOBRA/kzgamer-contribution.json", f"--entropy-hex {hex}"]
-                subprocess.run([command], capture_output=True)
+                subprocess.run(command, capture_output=True)
                 os.remove("entropy.hex")
 
     def status_check(self):
