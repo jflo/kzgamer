@@ -51,6 +51,7 @@ class MainWindow(QWidget):
         slider_labels_layout.addWidget(self.hit_label)
         slider_labels_layout.addWidget(self.mode_slider)
         slider_labels_layout.addWidget(self.morale_label)
+        self.last_roll_display.setText("Ready for rollin")
 
         main_layout.addLayout(slider_labels_layout)
 
@@ -59,11 +60,11 @@ class MainWindow(QWidget):
         button_layout.setContentsMargins(0, 0, 0, 0)
         button_size = 50
 
-        for i in range(1, 13):
-            button = QPushButton(str(i))
+        for i in range(0, 12):
+            button = QPushButton(str(i+1))
             button.clicked.connect(self.button_click_handler)
-            row = i%6
-            col = (i - 1)
+            row = int(i/6)
+            col = (i+6)%6
             button.setMinimumSize(button_size, button_size)
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
             button_layout.addWidget(button, row, col)
@@ -72,7 +73,7 @@ class MainWindow(QWidget):
         button_grid.setLayout(button_layout)
         self.mode_slider.setFixedWidth(int(button_grid.width()/3))
         self.mode_slider.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        main_layout.addLayout(button_grid)
+        main_layout.addWidget(button_grid)
         self.setLayout(main_layout)
 
         self.mode_slider.sliderReleased.connect(self.slider_released_handler)
@@ -85,7 +86,7 @@ class MainWindow(QWidget):
     @pyqtSlot(object)
     def log_roll(self, message):
         self.last_roll_display.clear()
-        self.last_roll_display.append(message)
+        self.last_roll_display.setText(message)
         self.log_pane.append(f"[{QtCore.QTime.currentTime().toString('hh:mm:ss')}] {message}")
 
     def slider_released_handler(self):
