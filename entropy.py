@@ -3,8 +3,9 @@ from bitarray import util
 
 class Entropy:
 
-    def __init__(self):
+    def __init__(self, collection_goal):
         self.running_entropy = bitarray()
+        self.stop_at = collection_goal
 
     def entropy_add(self, dice) :
         for d in dice:
@@ -17,11 +18,17 @@ class Entropy:
             self.running_entropy.append(bit3)
 
     def entropy_full(self):
-        return len(self.running_entropy) >= 1024
+        return len(self.running_entropy) >= self.stop_at
 
     def to_hex_string(self):
-        if self.running_entropy % 4 == 0:
-            return bitarray.util.ba2hex(self.running_entropy)
+        return bitarray.util.ba2hex(self.truncate_to_multiple_of_4(self.running_entropy))
 
     def bits_collected(self):
         return len(self.running_entropy)
+
+    def truncate_to_multiple_of_4(self, bitarray):
+        num_bits = len(bitarray)
+        num_bits_to_remove = num_bits % 4
+        if num_bits_to_remove != 0:
+            bitarray = bitarray[:-num_bits_to_remove]
+        return bitarray

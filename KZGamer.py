@@ -14,7 +14,6 @@ except:
     print("exception during picam setup")
 
 from dice import get_blobs, get_dice_from_blobs, simplify_dice
-from VideoFrameProvider import VideoFrameProvider
 from entropy import Entropy
 
 if picam_available:
@@ -48,15 +47,19 @@ class KZGamerThread(QThread):
         else:
             self.camera = cv2.VideoCapture(0)
 
-        self.entropy = Entropy()
+        self.entropy = Entropy(128)
         self.settle_frames = 2
         self.hitting_on = 4
-        self.vid_display = VideoFrameProvider()
+        self.mode = "Morale"
         self.frame_capture_delay = 0.1
 
     @pyqtSlot(object)
     def target_selected(self, target_number):
         self.hitting_on = target_number
+
+    @pyqtSlot(object)
+    def mode_selected(self, mode_name):
+        self.mode = mode_name
 
     def run(self):
         loop_state = "waiting"
@@ -87,9 +90,17 @@ class KZGamerThread(QThread):
                     self.entropy.entropy_add(last_stable_dice)
                     num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
                     num_sixes = len([num for num in last_stable_dice if num == 6])
+                    if self.mode == "Hit/Damage":
+                        roll_result = f"{num_hits} hits({self.hitting_on}) on {len(last_stable_dice)} dice, {num_sixes} exploded"
+                    elif self.mode == "Morale":
+                        total_value = sum(last_stable_dice)
+                        if total_value <= self.hitting_on:
+                            roll_result = "Morale check succeeded"
+                        else:
+                            roll_result = "Morale check failed"
                     num_bits_collected = self.entropy.bits_collected()
-                    roll_message = f"{num_hits} hits({self.hitting_on}) on {len(last_stable_dice)} dice, {num_sixes} exploded - {num_bits_collected}" \
-                               f" total bits of entropy collected"
+                    roll_message = f"{roll_result} - {num_bits_collected}" \
+                                   f" total bits of entropy collected"
                     self.new_roll.emit(roll_message)
                     if picam_available:
                         self.trap_door.spring_and_reset()
