@@ -41,10 +41,11 @@ class MainWindow(QWidget):
          # Add the radio buttons for the mode input
 
         radio_button_size = "25px"
+        radio_button_font_size = "18px"
         self.hit_damage_radio = QRadioButton("Hit/Damage")
-        self.hit_damage_radio.setStyleSheet(f"QRadioButton::indicator {{ width: {radio_button_size}; height: {radio_button_size}; }}")
+        self.hit_damage_radio.setStyleSheet(f"QRadioButton::indicator {{ width: {radio_button_size}; height: {radio_button_size}; font-size: {radio_button_font_size}; }}")
         self.morale_radio = QRadioButton("Morale")
-        self.morale_radio.setStyleSheet(f"QRadioButton::indicator {{ width: {radio_button_size}; height: {radio_button_size}; }}")
+        self.morale_radio.setStyleSheet(f"QRadioButton::indicator {{ width: {radio_button_size}; height: {radio_button_size}; font-size: {radio_button_font_size}; }}")
         self.hit_damage_radio.toggled.connect(self.hit_damage_mode)
         self.morale_radio.toggled.connect(self.morale_mode)
 
@@ -59,6 +60,9 @@ class MainWindow(QWidget):
         self.button_layout.setContentsMargins(0, 0, 0, 0)
         button_size = 50
 
+        button_font = QFont()
+        button_font.setPixelSize(18)
+
         for i in range(0, 10):
             button = QPushButton(str(i+1))
             button.setObjectName(str(i+1))
@@ -67,17 +71,19 @@ class MainWindow(QWidget):
             col = (i+6)%6
             button.setMinimumSize(button_size, button_size)
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+            button.setFont(button_font)
             self.button_layout.addWidget(button, row, col)
 
         
         self.button_grid.setLayout(self.button_layout)
         self.morale_radio.setChecked(True) # Set Hit/Damage mode as the default
+        self.last_roll_display.setMaximumWidth(self.button_grid.width())
         main_layout.addWidget(self.button_grid)
         self.setLayout(main_layout)
 
     def button_click_handler(self):
         sender = self.sender()
-        self.log_pane.append(f"hitting on {sender.text()}s")
+        self.log_roll(f"hitting on {sender.text()}s")
         self.kzgamer_thread.target_selected(int(sender.text()))
 
     @pyqtSlot(object)
@@ -94,14 +100,14 @@ class MainWindow(QWidget):
         self.last_roll_display.clear()
         self.last_roll_display.setStyleSheet(f"color: {color_to_log}; font-size: 28px")
         self.last_roll_display.setText(log_message)
-        self.log_message(message)
+        self.log_message(log_message)
 
     def log_message(self, message):
         self.log_pane.append(f"[{QtCore.QTime.currentTime().toString('hh:mm:ss')}] {message}")
 
     def hit_damage_mode(self, checked):
         if checked:
-            self.log_pane.append("Setting Hit/Damage mode")
+            self.log_roll("rolling Hit/Damage")
             for i in range(1, 11):
                 button = self.button_grid.findChild(QPushButton, str(i))
                 if i <= 6:
@@ -112,7 +118,7 @@ class MainWindow(QWidget):
             
     def morale_mode(self, checked):
         if checked:
-            self.log_pane.append("Setting Morale mode")
+            self.log_roll("rolling Morale")
             for i in range(1, 11):
                 button = self.button_grid.findChild(QPushButton, str(i))
                 button.setEnabled(True)

@@ -130,7 +130,7 @@ class KZGamerThread(QThread):
 
             if self.entropy.entropy_full():
                 hex = self.entropy.to_hex_string()
-                self.new_roll.emit("DANKSHARD BE PRAISED THE KZGENING IS UPON US")
+                self.new_roll.emit("DANKSHARD BE PRAISED")
                 self.new_roll.emit("CEASE HOSTILITIES")
                 command = ["/usr/local/bin/kzgcli", "offline", "contribute", "--hex-entropy", f"{hex}", "/media/jflo/KOBRA/ceremony-state.json", "/media/jflo/KOBRA/kzgamer-contribution.json"]
                 contrib_result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
@@ -139,7 +139,7 @@ class KZGamerThread(QThread):
                 contrib_result.wait()
                 if os.path.isfile("entropy.hex"):
                     os.remove("entropy.hex")
-                self.new_roll.emit("retreive contribution and submit to sequencer")
+                self.new_roll.emit("submit to sequencer")
                 self.stop()
 
     def status_check(self):
