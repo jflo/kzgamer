@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QGridLayout, \
     QPushButton, QRadioButton, QTextEdit, QLabel, QSizePolicy, QSlider, QHBoxLayout
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QPixmap, QImage
 from KZGamer import KZGamerThread
 
 
@@ -11,6 +11,7 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.kzgamer_thread = KZGamerThread(self)
+        self.kzgamer_thread.vid_display.new_frame.connect(self.update_video_pane)
         self.kzgamer_thread.new_roll.connect(self.log_roll)
         self.kzgamer_thread.log.connect(self.log_message)
         self.button_grid = QWidget()
@@ -23,7 +24,10 @@ class MainWindow(QWidget):
         self.setWindowTitle("KZGamer")
 
         main_layout = QVBoxLayout()
-
+        # Video pane
+        self.video_pane = QLabel()
+        #self.video_pane.setFixedWidth(480)
+        main_layout.addWidget(self.video_pane)
         # game log pane
         self.log_pane = QTextEdit()
         self.log_pane.setReadOnly(True)
@@ -85,6 +89,10 @@ class MainWindow(QWidget):
         sender = self.sender()
         self.log_roll(f"hitting on {sender.text()}s")
         self.kzgamer_thread.target_selected(int(sender.text()))
+
+    @pyqtSlot(QPixmap)
+    def update_video_pane(self, pixmap):
+        self.video_pane.setPixmap(pixmap)
 
     @pyqtSlot(object)
     def log_roll(self, message):

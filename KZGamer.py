@@ -14,6 +14,7 @@ except:
     print("exception during picam setup")
 
 from dice import get_blobs, get_dice_from_blobs, simplify_dice
+from VideoFrameProvider import VideoFrameProvider
 from entropy import Entropy
 
 if picam_available:
@@ -51,6 +52,7 @@ class KZGamerThread(QThread):
         self.entropy = Entropy(self.entropy_goal)
         self.settle_frames = 2
         self.hitting_on = 4
+        self.vid_display = VideoFrameProvider()
         self.mode = "Morale"
         self.frame_capture_delay = 0.1
         #"#00ff00"
@@ -96,6 +98,8 @@ class KZGamerThread(QThread):
                     for num in last_stable_dice:
                         if num > 6:
                             self.log.emit("error detected, dice ignored, reroll")
+                    loop_state = "dice stable"
+                    self.vid_display.overlay_info(processed, dice, blobs, loop_state)
                     self.entropy.entropy_add(last_stable_dice)
                     num_hits = len([num for num in last_stable_dice if num >= self.hitting_on])
                     num_sixes = len([num for num in last_stable_dice if num == 6])
